@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import InputPanel from './components/InputPanel';
 import ReviewDashboard from './components/ReviewDashboard';
 import Button from './components/Button';
+import LandingPage from './components/LandingPage';
 import { TemplateSidebar, TemplateDetail } from './components/PrdTemplate';
 import useReview from './hooks/useReview';
 import useTheme from './hooks/useTheme';
@@ -189,6 +190,7 @@ const fade = {
 export default function App() {
   const { submit, status, result, error, reset } = useReview();
   const { theme, toggle } = useTheme();
+  const [showLanding, setShowLanding] = useState(true);
   const [tab, setTab]           = useState('review');
   const [uiReady, setUiReady]   = useState(false);
   const [source, setSource]     = useState('');
@@ -212,6 +214,10 @@ export default function App() {
 
   const showProcessing = status === 'loading' || (status === 'done' && !uiReady);
   const showResults    = status === 'done' && uiReady && !!result;
+
+  if (showLanding) {
+    return <LandingPage onEnter={() => setShowLanding(false)} />;
+  }
 
   return (
     <div className="h-screen bg-gray-50 dark:bg-gray-950 flex flex-col overflow-hidden">

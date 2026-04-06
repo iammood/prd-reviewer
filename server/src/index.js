@@ -9,6 +9,7 @@ if (!process.env.ANTHROPIC_API_KEY) {
   console.error('Error: ANTHROPIC_API_KEY environment variable is not set.');
   process.exit(1);
 }
+console.log('API KEY EXISTS:', !!process.env.ANTHROPIC_API_KEY);
 
 const app = express();
 const PORT = process.env.PORT || 10000;
