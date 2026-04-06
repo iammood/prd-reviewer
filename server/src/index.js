@@ -21,6 +21,7 @@ app.use('/api/review',  reviewRoute);
 app.use('/api/fix',    fixRoute);
 app.use('/api/extract', extractRoute);
 
+app.get('/', (_req, res) => res.send('PRD Reviewer API is running 🚀'));
 app.get('/api/health', (_req, res) => res.json({ ok: true }));
 
 app.listen(PORT, () => {
