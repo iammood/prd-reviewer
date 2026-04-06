@@ -1,5 +1,8 @@
 import { useState } from 'react';
 
+const API_URL = import.meta.env.VITE_API_URL;
+console.log('API URL:', API_URL);
+
 export default function useReview() {
   const [status, setStatus] = useState('idle'); // idle | loading | done | error
   const [result, setResult] = useState(null);
@@ -18,7 +21,7 @@ export default function useReview() {
     formData.append('file', file);
 
     try {
-      const res = await fetch(import.meta.env.VITE_API_URL + '/api/review', {
+      const res = await fetch(`${API_URL}/api/review`, {
         method: 'POST',
         body: formData,
       });

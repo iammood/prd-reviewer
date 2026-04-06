@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import Button from './Button';
 
+const API_URL = import.meta.env.VITE_API_URL;
 const ACCEPTED = ['.docx', '.pdf', '.md'];
 
 export default function InputPanel({ onSubmit, loading, onSourceChange }) {
@@ -35,7 +36,7 @@ export default function InputPanel({ onSubmit, loading, onSourceChange }) {
       try {
         const fd = new FormData();
         fd.append('file', file);
-        const res = await fetch(import.meta.env.VITE_API_URL + '/api/extract', { method: 'POST', body: fd });
+        const res = await fetch(`${API_URL}/api/extract`, { method: 'POST', body: fd });
         const rawText = await res.text();
         let data;
         try {

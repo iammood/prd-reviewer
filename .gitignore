@@ -11,6 +11,7 @@ client/node_modules/.vite/
 
 # Environment variables
 .env
+client/.env
 server/.env
 server/*.env.txt
 
