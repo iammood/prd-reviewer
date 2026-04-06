@@ -12,6 +12,7 @@ client/node_modules/.vite/
 # Environment variables
 .env
 server/.env
+server/*.env.txt
 
 # OS
 .DS_Store
