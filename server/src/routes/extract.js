@@ -12,7 +12,7 @@ const upload = multer({
 
 router.post('/', upload.single('file'), async (req, res) => {
   try {
-    if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+    if (!req.file) return res.status(400).json({ success: false, error: 'No file uploaded' });
 
     const mime = req.file.mimetype;
     const name = req.file.originalname.toLowerCase();
@@ -31,13 +31,13 @@ router.post('/', upload.single('file'), async (req, res) => {
     } else if (isText) {
       text = req.file.buffer.toString('utf-8');
     } else {
-      return res.status(400).json({ error: 'Unsupported file type' });
+      return res.status(400).json({ success: false, error: 'Unsupported file type' });
     }
 
-    return res.json({ text });
+    return res.json({ success: true, text });
   } catch (err) {
     console.error('Extract error:', err);
-    return res.status(500).json({ error: 'Failed to extract text from file' });
+    return res.status(500).json({ success: false, error: 'Failed to extract text from file' });
   }
 });
 
