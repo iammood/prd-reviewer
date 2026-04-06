@@ -53,9 +53,9 @@ The server exits on startup if `ANTHROPIC_API_KEY` is not set. Copy `server/.env
 
 **Client** (`client/.env`):
 ```
-VITE_API_URL=http://localhost:10000
+VITE_API_URL=http://localhost:3001
 ```
-All `fetch` calls use a module-level `const API_URL = import.meta.env.VITE_API_URL` then `` `${API_URL}/api/...` ``. In local dev, set to `http://localhost:10000` (server default port). In production (e.g. Netlify), set to the deployed Render server URL.
+All `fetch` calls use a module-level `const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:10000'` then `` `${API_URL}/api/...` ``. In local dev, set to `http://localhost:3001`. In production (e.g. Netlify), set to the deployed Render server URL.
 
 **The API key is never sent to the client.** It lives only in the server environment and is used server-side for all Anthropic API calls.
 
