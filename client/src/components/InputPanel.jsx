@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import Button from './Button';
 
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:10000';
 const ACCEPTED = ['.docx', '.pdf', '.md'];
 
 export default function InputPanel({ onSubmit, loading, onSourceChange }) {

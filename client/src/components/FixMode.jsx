@@ -3,7 +3,7 @@ import { CATEGORY_META, getVerdictStyle, cleanMarkdown, parseParagraphs } from '
 import { downloadUpdatedPrdPdf, downloadUpdatedPrdDocx } from '../utils/downloadReport';
 import Button from './Button';
 
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:10000';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
