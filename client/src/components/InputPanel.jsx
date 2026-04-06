@@ -36,11 +36,13 @@ export default function InputPanel({ onSubmit, loading, onSourceChange }) {
         const fd = new FormData();
         fd.append('file', file);
         const res = await fetch(import.meta.env.VITE_API_URL + '/api/extract', { method: 'POST', body: fd });
+        const rawText = await res.text();
         let data;
         try {
-          data = await res.json();
+          data = JSON.parse(rawText);
         } catch (err) {
-          throw new Error('Invalid server response');
+          console.error('Extract — non-JSON response:', rawText);
+          throw new Error('Server returned an invalid response. Check that VITE_API_URL is set correctly.');
         }
         if (!res.ok || !data.success) throw new Error(data?.error || 'Failed to extract text');
         setPasteText(data.text || '');

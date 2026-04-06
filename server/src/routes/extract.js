@@ -1,6 +1,7 @@
 const express = require('express');
 const multer   = require('multer');
-const pdf      = require('pdf-parse');
+const pdfParse = require('pdf-parse');
+const pdf      = pdfParse.default || pdfParse;
 const mammoth  = require('mammoth');
 
 const router = express.Router();
