@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Button from './Button';
 
 export default function ApiKeyInput({ label, value, onChange, placeholder }) {
   const [visible, setVisible] = useState(false);
@@ -16,10 +17,11 @@ export default function ApiKeyInput({ label, value, onChange, placeholder }) {
           placeholder={placeholder || 'Paste your API key...'}
           autoComplete="off"
           spellCheck={false}
-          className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2.5 pr-10 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors"
+          className="w-full bg-gray-900 border border-gray-700 rounded-2xl px-3 py-2.5 pr-10 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors"
         />
-        <button
-          type="button"
+        <Button
+          size="raw"
+          variant="raw"
           onClick={() => setVisible(v => !v)}
           aria-label={visible ? 'Hide API key' : 'Show API key'}
           className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors"
@@ -34,7 +36,7 @@ export default function ApiKeyInput({ label, value, onChange, placeholder }) {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
             </svg>
           )}
-        </button>
+        </Button>
       </div>
     </div>
   );

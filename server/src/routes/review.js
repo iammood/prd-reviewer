@@ -82,6 +82,7 @@ router.post('/', upload.single('file'), async (req, res) => {
         summary: overallSummary,
       },
       categories,
+      prdText,
     });
   } catch (err) {
     if (err.status === 400) {

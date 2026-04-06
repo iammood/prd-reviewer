@@ -1,87 +1,48 @@
-import { useState } from 'react';
-import TrafficLight from './TrafficLight';
 import ScoreBar from './ScoreBar';
-import { CATEGORY_META } from '../utils/statusHelpers';
+import Button from './Button';
+import { CATEGORY_META } from '../utils/statusHelpers.jsx';
 
-export default function CategoryCard({ categoryKey, data }) {
-  const [expanded, setExpanded] = useState(false);
-  const meta = CATEGORY_META[categoryKey] || { label: categoryKey, icon: '📌', description: '' };
+const STATUS_CONFIG = {
+  good:    { label: 'Strong',            badge: 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400' },
+  caution: { label: 'Needs improvement', badge: 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400' },
+  blocker: { label: 'Missing',           badge: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400' },
+};
 
-  function renderVerdict(text) {
-    const parts = text.split(/(\*\*[^*]+\*\*)/g);
-    return parts.map((part, i) =>
-      part.startsWith('**') ? <strong key={i}>{part.slice(2, -2)}</strong> : part
-    );
-  }
+export default function CategoryCard({ categoryKey, data, onClick }) {
+  const meta   = CATEGORY_META[categoryKey] || { label: categoryKey };
+  const status = STATUS_CONFIG[data.status] || STATUS_CONFIG.good;
 
   return (
-    <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl overflow-hidden">
-      <button
-        type="button"
-        onClick={() => setExpanded(e => !e)}
-        aria-expanded={expanded}
-        aria-controls={`category-body-${categoryKey}`}
-        className="w-full text-left px-5 py-4 flex items-start gap-4 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-indigo-500"
-      >
-        <div className="text-2xl mt-0.5 flex-shrink-0" aria-hidden="true">{meta.icon}</div>
-
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between gap-3 flex-wrap">
-            <div>
-              <span className="font-semibold text-gray-800 dark:text-gray-100">{meta.label}</span>
-              <span className="text-xs text-gray-400 dark:text-gray-500 ml-2">{meta.description}</span>
-            </div>
-            <TrafficLight status={data.status} />
-          </div>
-          <div className="mt-2">
-            <ScoreBar score={data.score} status={data.status} />
-          </div>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 leading-relaxed">
-            {renderVerdict(data.verdict)}
-          </p>
-        </div>
-
-        <span
-          className={`flex-shrink-0 text-gray-400 dark:text-gray-500 mt-1 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`}
-          aria-hidden="true"
-        >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-          </svg>
+    <Button
+      size="raw"
+      variant="raw"
+      onClick={onClick}
+      aria-label={`View ${meta.label} details`}
+      className="w-full text-left p-4 rounded-2xl
+                 bg-white dark:bg-gray-900
+                 border border-gray-100 dark:border-white/10
+                 hover:bg-gray-50 dark:hover:bg-white/[0.04]
+                 focus-visible:ring-2 focus-visible:ring-indigo-500
+                 transition-colors"
+    >
+      {/* Title + status */}
+      <div className="flex items-center justify-between gap-3 mb-3">
+        <span className="font-medium text-gray-900 dark:text-gray-100 text-[15px]">
+          {meta.label}
         </span>
-      </button>
+        <span className={`flex-shrink-0 px-2 py-0.5 rounded-full text-xs font-medium ${status.badge}`}>
+          {status.label}
+        </span>
+      </div>
 
-      {expanded && (
-        <div
-          id={`category-body-${categoryKey}`}
-          className="px-5 pb-5 border-t border-gray-200 dark:border-gray-800"
-        >
-          <div className="mt-4">
-            <h4 className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-2">Analysis</h4>
-            {data.summary.split('\n').filter(p => p.trim()).map((paragraph, i) => (
-              <p key={i} className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed mb-2">
-                {paragraph}
-              </p>
-            ))}
-          </div>
+      {/* Score */}
+      <p className="text-2xl font-bold tabular-nums text-gray-900 dark:text-gray-100 mb-3 leading-tight tracking-tight">
+        {data.score}
+        <span className="text-sm font-normal text-gray-400 dark:text-gray-500 ml-0.5">%</span>
+      </p>
 
-          <div className="mt-4">
-            <h4 className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-2">
-              Recommendations
-            </h4>
-            <ul className="space-y-2">
-              {data.recommendations.map((rec, i) => (
-                <li key={i} className="flex gap-2.5 text-sm text-gray-600 dark:text-gray-300">
-                  <span className="flex-shrink-0 w-5 h-5 rounded-full bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-300 text-xs flex items-center justify-center font-bold mt-0.5">
-                    {i + 1}
-                  </span>
-                  <span className="leading-relaxed">{rec}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      )}
-    </div>
+      {/* Slim progress bar */}
+      <ScoreBar score={data.score} slim />
+    </Button>
   );
 }

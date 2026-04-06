@@ -1,4 +1,4 @@
-import { getStatusBg, getStatusLabel } from '../utils/statusHelpers';
+import { getStatusBg, getStatusLabel } from '../utils/statusHelpers.jsx';
 
 export default function TrafficLight({ status, size = 'md' }) {
   const sizeClass = size === 'sm' ? 'w-3 h-3' : 'w-4 h-4';
