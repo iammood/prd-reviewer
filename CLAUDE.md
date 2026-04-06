@@ -44,14 +44,18 @@ Open `http://localhost:5173`.
 
 ## Environment variables
 
-The server requires a single env var in `server/.env`:
-
+**Server** (`server/.env`):
 ```
 PORT=3001
 ANTHROPIC_API_KEY=sk-ant-...
 ```
-
 The server exits on startup if `ANTHROPIC_API_KEY` is not set. Copy `server/.env.example` as a starting point.
+
+**Client** (`client/.env`):
+```
+VITE_API_URL=https://your-api-server.com
+```
+All `fetch` calls use `import.meta.env.VITE_API_URL + '/api/...'`. In local dev, set `VITE_API_URL=` (empty string) so the Vite proxy handles `/api/*` → `http://localhost:3001`. In production (e.g. Netlify), set it to the deployed server URL.
 
 **The API key is never sent to the client.** It lives only in the server environment and is used server-side for all Anthropic API calls.
 

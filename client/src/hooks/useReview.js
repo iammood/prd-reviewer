@@ -18,12 +18,19 @@ export default function useReview() {
     formData.append('file', file);
 
     try {
-      const res = await fetch('/api/review', {
+      const res = await fetch(import.meta.env.VITE_API_URL + '/api/review', {
         method: 'POST',
         body: formData,
       });
 
-      const data = await res.json();
+      const text = await res.text();
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch (e) {
+        console.error('Invalid JSON response:', text);
+        throw e;
+      }
 
       if (!res.ok) {
         throw new Error(data.error || `Server error: ${res.status}`);

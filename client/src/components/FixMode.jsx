@@ -331,7 +331,7 @@ export default function FixMode({ result, categoryKey, onClose }) {
     setGenerating(true);
     setGenerateError('');
     try {
-      const res  = await fetch('/api/fix', {
+      const res  = await fetch(import.meta.env.VITE_API_URL + '/api/fix', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -341,7 +341,14 @@ export default function FixMode({ result, categoryKey, onClose }) {
           suggestedFix:  step.suggestedFix,
         }),
       });
-      const data = await res.json();
+      const text = await res.text();
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch (e) {
+        console.error('Invalid JSON response:', text);
+        throw e;
+      }
       if (!res.ok) throw new Error(data.error || 'Generation failed');
       setInputs(prev => ({ ...prev, [step.id]: data.fixText }));
     } catch (err) {

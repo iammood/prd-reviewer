@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Clipboard, Check } from 'lucide-react';
 import Button from './Button';
 import { CATEGORY_META, renderText, parseParagraphs, cleanMarkdown } from '../utils/statusHelpers.jsx';
 
@@ -55,13 +56,13 @@ export default function CategoryModal({ categoryKey, data, onClose }) {
         <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
           <h2 className="font-semibold text-white text-base leading-tight tracking-tight">{meta.label}</h2>
           <div className="flex items-center gap-2">
-            <Button
-              size="sm"
-              variant="ghost"
+            <button
               onClick={handleCopy}
+              className="flex items-center gap-2 rounded-2xl px-3 py-2 text-sm font-medium bg-white/5 hover:bg-white/10 text-gray-300 transition-colors"
             >
-              {copied ? 'Copied!' : 'Copy'}
-            </Button>
+              {copied ? <Check size={16} /> : <Clipboard size={16} />}
+              <span>{copied ? 'Copied' : 'Copy'}</span>
+            </button>
             <Button
               size="raw"
               variant="raw"

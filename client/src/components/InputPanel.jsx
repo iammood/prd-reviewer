@@ -35,8 +35,15 @@ export default function InputPanel({ onSubmit, loading, onSourceChange }) {
       try {
         const fd = new FormData();
         fd.append('file', file);
-        const res  = await fetch('/api/extract', { method: 'POST', body: fd });
-        const data = await res.json();
+        const res  = await fetch(import.meta.env.VITE_API_URL + '/api/extract', { method: 'POST', body: fd });
+        const text = await res.text();
+        let data;
+        try {
+          data = JSON.parse(text);
+        } catch (e) {
+          console.error('Invalid JSON response:', text);
+          throw e;
+        }
         if (!res.ok) throw new Error(data.error || 'Extraction failed');
         setPasteText(data.text || '');
       } catch (err) {
