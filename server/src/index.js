@@ -16,6 +16,7 @@ const PORT = process.env.PORT || 10000;
 app.use(cors({
   origin: '*',
 }));
+app.use(express.json());
 
 app.use('/api/review',  reviewRoute);
 app.use('/api/fix',    fixRoute);
