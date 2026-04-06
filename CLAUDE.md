@@ -16,7 +16,7 @@ prd-reviewer/
 └── server/          # Node.js + Express (backend API)
 ```
 
-The client proxies `/api/*` requests to the server at `http://localhost:3001` (configured in `vite.config.js`).
+The client proxies `/api/*` requests to the server at `http://localhost:3001` (configured in `vite.config.js`). In production, all fetch calls use `VITE_API_URL` (see Environment variables). The server allows CORS from all origins (`origin: '*'`) to support Netlify → Render cross-origin requests.
 
 ---
 
