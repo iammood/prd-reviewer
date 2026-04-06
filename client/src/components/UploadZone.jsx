@@ -112,7 +112,7 @@ function ProcessingView({ source, apiDone, onComplete }) {
               </span>
               <span className={`text-sm transition-colors duration-200 ${
                 isComplete ? 'text-gray-400 dark:text-gray-500'
-                  : isCurrent ? 'text-gray-800 dark:text-gray-100 font-medium'
+                  : isCurrent ? 'text-gray-800 dark:text-white font-medium'
                   : 'text-gray-300 dark:text-gray-600'
               }`}>{label}</span>
             </motion.div>
@@ -263,7 +263,7 @@ export default function UploadZone({ onSubmit, loading, apiDone, onComplete }) {
                   <p className="text-sm font-semibold text-indigo-600 dark:text-indigo-300">Drop to analyze</p>
                 ) : (
                   <div className="text-center space-y-1">
-                    <p className="text-sm font-medium text-gray-700 dark:text-gray-200">Drop your PRD here</p>
+                    <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Drop your PRD here</p>
                     <p className="text-sm text-gray-400 dark:text-gray-500">
                       or <span className="text-indigo-500 dark:text-indigo-400">browse to upload</span>
                     </p>
@@ -321,7 +321,7 @@ export default function UploadZone({ onSubmit, loading, apiDone, onComplete }) {
                   onChange={e => setPasteText(e.target.value)}
                   placeholder="Paste your PRD content here…"
                   className="absolute inset-0 w-full h-full bg-transparent px-5 pt-5 pb-3
-                             text-sm text-gray-700 dark:text-gray-200
+                             text-sm text-gray-700 dark:text-gray-300
                              placeholder-gray-400 dark:placeholder-gray-600
                              resize-none outline-none leading-relaxed"
                 />

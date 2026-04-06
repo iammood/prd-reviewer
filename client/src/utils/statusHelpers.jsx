@@ -94,7 +94,7 @@ export function renderText(text) {
   const parts = cleaned.split(/(\*\*.*?\*\*)/);
   return parts.map((part, i) =>
     part.startsWith('**')
-      ? <strong key={i} className="font-semibold text-gray-900 dark:text-gray-100">{part.slice(2, -2)}</strong>
+      ? <strong key={i} className="font-semibold text-gray-900 dark:text-white">{part.slice(2, -2)}</strong>
       : part
   );
 }

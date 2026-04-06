@@ -51,14 +51,14 @@ export default function DownloadMenu({ result }) {
           <Button
             type="button"
             onClick={() => handle(downloadPdf)}
-            className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-left"
+            className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-left"
           >
             <span className="text-base">📄</span> PDF (.pdf)
           </Button>
           <Button
             type="button"
             onClick={() => handle(downloadDocx)}
-            className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-left"
+            className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-left"
           >
             <span className="text-base">📝</span> Word (.docx)
           </Button>

@@ -94,7 +94,7 @@ export function TemplateSidebar({ type, audience, selectedId, onTypeChange, onAu
               <p className={`text-sm font-medium leading-snug ${
                 selectedId === s.id
                   ? 'text-indigo-700 dark:text-indigo-300'
-                  : 'text-gray-700 dark:text-gray-200'
+                  : 'text-gray-700 dark:text-gray-300'
               }`}>
                 {s.title}
               </p>
@@ -156,7 +156,7 @@ export function TemplateDetail({ id }) {
               {i + 1}
             </span>
             <div className="flex flex-col gap-1 min-w-0">
-              <p className="text-sm text-gray-700 dark:text-gray-200 leading-relaxed">{item.text}</p>
+              <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{item.text}</p>
               {item.example && (
                 <p className="text-xs text-gray-400 dark:text-gray-500 leading-relaxed italic">
                   e.g. {item.example}

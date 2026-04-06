@@ -99,7 +99,7 @@ function PreviewModal({ prdText, onClose }) {
     >
       <div className="w-full max-w-2xl max-h-[80vh] bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-2xl flex flex-col overflow-hidden">
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-800">
-          <h3 className="font-semibold text-gray-800 dark:text-gray-100 text-sm leading-tight tracking-tight">Updated PRD Preview</h3>
+          <h3 className="font-semibold text-gray-800 dark:text-white text-sm leading-tight tracking-tight">Updated PRD Preview</h3>
           <Button size="raw" variant="raw" onClick={onClose} aria-label="Close preview"
             className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors p-1 hover:bg-gray-100 dark:hover:bg-gray-800">
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -195,7 +195,7 @@ function CompletionScreen({ steps, inputs, result, onClose }) {
                     style={{ width: `${score}%` }}
                   />
                 </div>
-                <span className={`text-xs tabular-nums w-8 text-right ${muted ? 'text-gray-500' : 'font-bold text-gray-700 dark:text-gray-200'}`}>{score}%</span>
+                <span className={`text-xs tabular-nums w-8 text-right ${muted ? 'text-gray-500' : 'font-bold text-gray-700 dark:text-gray-300'}`}>{score}%</span>
               </div>
             ))}
           </div>
@@ -409,7 +409,7 @@ export default function FixMode({ result, categoryKey, onClose }) {
           {/* Category pill */}
           <div className="px-6 pt-5 pb-0 flex items-center gap-2">
             <span className="text-lg" aria-hidden="true">{step.categoryIcon}</span>
-            <span className="text-sm font-semibold text-gray-700 dark:text-gray-200">{step.categoryLabel}</span>
+            <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">{step.categoryLabel}</span>
             <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${STATUS_BADGE[step.status]}`}>
               {STATUS_LABEL[step.status]}
             </span>
@@ -420,7 +420,7 @@ export default function FixMode({ result, categoryKey, onClose }) {
             {/* Key Issue */}
             <div>
               <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-1.5">Key Issue</p>
-              <p className="text-sm text-gray-800 dark:text-gray-100 leading-relaxed font-medium">{step.issue}</p>
+              <p className="text-sm text-gray-800 dark:text-white leading-relaxed font-medium">{step.issue}</p>
             </div>
 
             {/* Why it matters */}
@@ -436,7 +436,7 @@ export default function FixMode({ result, categoryKey, onClose }) {
               <p className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 uppercase tracking-wide mb-1.5">
                 💡 Suggested Fix
               </p>
-              <p className="text-sm text-gray-700 dark:text-gray-200 leading-relaxed">{step.suggestedFix}</p>
+              <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{step.suggestedFix}</p>
             </div>
 
             {/* Editable response */}
@@ -465,7 +465,7 @@ export default function FixMode({ result, categoryKey, onClose }) {
                 placeholder="Describe how you'll address this in your PRD, or click ✨ AI Fix to generate a draft…"
                 rows={4}
                 className="w-full rounded-2xl border border-gray-200 dark:border-gray-700
-                           bg-white dark:bg-gray-900 text-sm text-gray-700 dark:text-gray-200
+                           bg-white dark:bg-gray-900 text-sm text-gray-700 dark:text-gray-300
                            placeholder-gray-400 dark:placeholder-gray-600
                            px-4 py-3 resize-none focus:outline-none focus:ring-2
                            focus:ring-indigo-500 focus:border-transparent

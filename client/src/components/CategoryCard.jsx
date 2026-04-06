@@ -27,7 +27,7 @@ export default function CategoryCard({ categoryKey, data, onClick }) {
     >
       {/* Title + status */}
       <div className="flex items-center justify-between gap-3 mb-3">
-        <span className="font-medium text-gray-900 dark:text-gray-100 text-[15px]">
+        <span className="font-medium text-gray-900 dark:text-white text-[15px]">
           {meta.label}
         </span>
         <span className={`flex-shrink-0 px-2 py-0.5 rounded-full text-xs font-medium ${status.badge}`}>
@@ -36,7 +36,7 @@ export default function CategoryCard({ categoryKey, data, onClick }) {
       </div>
 
       {/* Score */}
-      <p className="text-2xl font-bold tabular-nums text-gray-900 dark:text-gray-100 mb-3 leading-tight tracking-tight">
+      <p className="text-2xl font-bold tabular-nums text-gray-900 dark:text-white mb-3 leading-tight tracking-tight">
         {data.score}
         <span className="text-sm font-normal text-gray-400 dark:text-gray-500 ml-0.5">%</span>
       </p>

@@ -90,7 +90,7 @@ function DownloadDropdown({ result }) {
                 size="raw"
                 variant="raw"
                 onClick={() => handle(fn, key)}
-                className="w-full px-4 py-3 text-sm text-gray-700 dark:text-gray-200
+                className="w-full px-4 py-3 text-sm text-gray-700 dark:text-gray-300
                            hover:bg-gray-50 dark:hover:bg-gray-700 text-left"
               >
                 {label}
@@ -126,7 +126,7 @@ export default function OverallBanner({ overall, categories, result, onFixMode }
         <span className={`px-3 py-1 rounded-full text-sm font-bold ${style.badge}`}>
           {overall.verdict}
         </span>
-        <span className="text-2xl font-bold tabular-nums text-gray-900 dark:text-gray-100 leading-tight tracking-tight">
+        <span className="text-2xl font-bold tabular-nums text-gray-900 dark:text-white leading-tight tracking-tight">
           {overall.score}<span className="text-base font-medium text-gray-400 dark:text-gray-500 ml-0.5">%</span>
         </span>
       </div>
@@ -150,7 +150,7 @@ export default function OverallBanner({ overall, categories, result, onFixMode }
                     className="p-4 rounded-2xl border border-gray-100 dark:border-white/10
                                bg-gray-50/50 dark:bg-white/5 flex flex-col gap-1.5">
                     <div className="flex items-center justify-between gap-3">
-                      <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                      <span className="text-sm font-medium text-gray-900 dark:text-white">
                         {label}
                       </span>
                       <span className={`flex-shrink-0 px-2 py-0.5 rounded-full text-xs font-medium ${statusStyle}`}>
@@ -172,7 +172,7 @@ export default function OverallBanner({ overall, categories, result, onFixMode }
           <p className="text-[11px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2">
             Next Step
           </p>
-          <p className="text-sm text-gray-700 dark:text-gray-200 leading-relaxed">
+          <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
             {NEXT_STEP[overall.verdict]}
           </p>
         </div>

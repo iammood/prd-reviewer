@@ -1,4 +1,4 @@
-import { cleanMarkdown } from '../utils/statusHelpers';
+import { cleanMarkdown } from '../utils/statusHelpers.jsx';
 
 const CATEGORY_ORDER = ['design', 'engineering', 'product', 'security'];
 const CATEGORY_LABELS = {

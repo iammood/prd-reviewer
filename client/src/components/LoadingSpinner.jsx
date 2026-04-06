@@ -32,7 +32,7 @@ export default function LoadingSpinner() {
         <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-indigo-500 animate-spin" />
       </div>
       <div className="text-center">
-        <p className="text-base font-medium text-gray-700 dark:text-gray-200">Analyzing your PRD</p>
+        <p className="text-base font-medium text-gray-700 dark:text-gray-300">Analyzing your PRD</p>
         <p className="text-sm text-gray-400 dark:text-gray-500 mt-1 transition-all">{STEPS[stepIndex]}</p>
       </div>
     </div>

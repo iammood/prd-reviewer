@@ -51,7 +51,7 @@ export default function MissingEssentials({ result }) {
       <div className="px-5 py-4 border-b border-gray-100 dark:border-gray-800">
         <div className="flex items-center justify-between gap-3">
           <div>
-            <h3 className="font-semibold text-gray-800 dark:text-gray-100 leading-tight tracking-tight">
+            <h3 className="font-semibold text-gray-800 dark:text-white leading-tight tracking-tight">
               Missing Essentials
             </h3>
             <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
@@ -86,7 +86,7 @@ export default function MissingEssentials({ result }) {
               {/* Group header */}
               <div className="flex items-center gap-2 mb-3">
                 <span className="text-base" aria-hidden="true">{meta.icon}</span>
-                <span className={`text-sm font-semibold ${groupDone ? 'text-gray-400 dark:text-gray-500 line-through' : 'text-gray-700 dark:text-gray-200'}`}>
+                <span className={`text-sm font-semibold ${groupDone ? 'text-gray-400 dark:text-gray-500 line-through' : 'text-gray-700 dark:text-gray-300'}`}>
                   {meta.label}
                 </span>
                 {groupDone ? (

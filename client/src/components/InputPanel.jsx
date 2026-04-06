@@ -122,7 +122,7 @@ export default function InputPanel({ onSubmit, loading, onSourceChange }) {
             onChange={e => setPasteText(e.target.value)}
             placeholder="Paste your PRD content here…"
             className="absolute inset-0 w-full h-full bg-transparent px-4 pt-4 pb-8
-                       text-sm text-gray-700 dark:text-gray-200
+                       text-sm text-gray-700 dark:text-gray-300
                        placeholder-gray-400 dark:placeholder-gray-600
                        resize-none outline-none leading-relaxed"
           />

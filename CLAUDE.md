@@ -150,6 +150,7 @@ Uses `claude-haiku-4-5-20251001` for low latency. Returns 2–3 sentences of pol
 - Default theme: dark.
 - Preference stored in `localStorage` under `prd_reviewer_theme`.
 - All components use paired light/dark Tailwind classes (e.g. `bg-white dark:bg-gray-900`).
+- **Text color system (dark mode)**: Primary=`dark:text-white`, Labels=`dark:text-gray-300`, Secondary=`dark:text-gray-400`, Muted=`dark:text-gray-500`. Do not use `dark:text-gray-100` or `dark:text-gray-200` — they are replaced by this scale.
 - **Font**: Mona Sans loaded via Google Fonts `@import` in `index.css` (`wght@200..900&display=swap`). No npm font package. Tailwind `fontFamily.sans` extended to `['"Mona Sans"', 'ui-sans-serif', 'system-ui']`. Applied globally via `font-family: 'Mona Sans', sans-serif` + `@apply font-sans` on `body` in `index.css`.
 - Two `tailwind.config.js` files exist: `client/tailwind.config.js` (used by Vite/PostCSS, content path `./src/**/*.{js,ts,jsx,tsx}`) and a root-level `tailwind.config.js` (content path `./client/src/**/*.{js,ts,jsx,tsx}`). The client-level config is the active one for the build.
 

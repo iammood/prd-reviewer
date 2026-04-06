@@ -135,7 +135,7 @@ function ProcessingView({ source, apiDone, onComplete }) {
               </span>
               <span className={`text-sm transition-colors duration-200 ${
                 isComplete ? 'text-gray-400 dark:text-gray-500'
-                  : isCurrent ? 'text-gray-800 dark:text-gray-100 font-medium'
+                  : isCurrent ? 'text-gray-800 dark:text-white font-medium'
                   : 'text-gray-300 dark:text-gray-600'
               }`}>{label}</span>
             </motion.div>
