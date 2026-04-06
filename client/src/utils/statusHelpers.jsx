@@ -79,11 +79,9 @@ export function formatScore(score) {
  * Returns a plain STRING — safe for PDF, DOCX, and any non-React context.
  * Use this in downloadReport.js and anywhere JSX is not available.
  */
-export function cleanMarkdown(text) {
+export function cleanMarkdown(text = "") {
   return text
-    .replace(/^#{1,6}\s+/gm, '')   // strip heading markers
-    .replace(/\*\*([^*]+)\*\*/g, '$1') // strip bold (plain text output)
-    .replace(/\*([^*]+)\*/g, '$1')  // strip italic
+    .replace(/[*#_`]/g, '')
     .trim();
 }
 
