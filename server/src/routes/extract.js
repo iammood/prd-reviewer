@@ -7,7 +7,7 @@ const router = express.Router();
 
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  limits: { fileSize: 20 * 1024 * 1024 }, // 20MB limit
 });
 
 router.post('/', upload.single('file'), async (req, res) => {
@@ -15,10 +15,6 @@ router.post('/', upload.single('file'), async (req, res) => {
     if (!req.file) {
       return res.status(400).json({ success: false, error: 'No file uploaded' });
     }
-
-    console.log('FILE RECEIVED:', req.file?.originalname);
-    console.log('MIME TYPE:', req.file?.mimetype);
-    console.log('FILE SIZE:', req.file?.size);
 
     const mime = req.file.mimetype;
     const name = req.file.originalname.toLowerCase();
@@ -30,14 +26,10 @@ router.post('/', upload.single('file'), async (req, res) => {
 
     try {
       if (isPdf) {
-        console.log('Parsing PDF...');
         const data = await pdf(req.file.buffer);
-        console.log('PDF parsed, length:', data.text?.length);
         text = data.text;
       } else if (isDocx) {
-        console.log('Parsing DOCX...');
         const result = await mammoth.extractRawText({ buffer: req.file.buffer });
-        console.log('DOCX parsed, length:', result.value?.length);
         text = result.value;
       } else if (isText) {
         text = req.file.buffer.toString('utf-8');

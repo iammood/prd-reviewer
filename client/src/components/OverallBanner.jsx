@@ -67,6 +67,9 @@ function DownloadDropdown({ result }) {
         loading={busy !== null}
         icon={busy ? null : <DownloadIcon />}
         iconAfter={busy ? null : <ChevronIcon open={open} />}
+        className="hover:scale-[1.02] hover:-translate-y-0.5 hover:shadow-lg
+                   active:scale-[0.98] active:translate-y-0 active:shadow-none
+                   transition-all duration-200 ease-out active:duration-100"
       >
         {busy ? 'Downloading…' : 'Download'}
       </Button>
@@ -183,6 +186,9 @@ export default function OverallBanner({ overall, categories, result, onFixMode }
             <Button
               variant="primary"
               onClick={onFixMode}
+              className="hover:scale-[1.02] hover:-translate-y-0.5 hover:shadow-lg
+                         active:scale-[0.98] active:translate-y-0 active:shadow-none
+                         transition-all duration-200 ease-out active:duration-100"
               iconAfter={
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />

@@ -26,6 +26,13 @@ app.use('/api/extract', extractRoute);
 app.get('/', (_req, res) => res.send('PRD Reviewer API is running 🚀'));
 app.get('/api/health', (_req, res) => res.json({ ok: true }));
 
+// Global error handler — catches multer errors and anything else unhandled
+app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
+  console.error('GLOBAL ERROR:', err);
+  const status = err.status || err.statusCode || 500;
+  res.status(status).json({ error: err.message || 'Internal server error' });
+});
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
