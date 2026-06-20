@@ -1,0 +1,4 @@
+[build]
+startCommand = "node src/index.js"
+buildCommand = "echo \"No build step\""
+port = 10000

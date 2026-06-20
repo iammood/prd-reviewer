@@ -16,7 +16,9 @@ prd-reviewer/
 └── server/          # Node.js + Express (backend API)
 ```
 
-The client proxies `/api/*` requests to the server at `http://localhost:3001` (configured in `vite.config.js`). In production, all fetch calls use `VITE_API_URL` (see Environment variables). The server allows CORS from all origins (`origin: '*'`) to support Netlify → Render cross-origin requests.
+The client proxies `/api/*` requests to the server at `http://localhost:3001` (configured in `vite.config.js`). In production, all fetch calls use `VITE_API_URL` (see Environment variables). The server allows CORS from all origins (`origin: '*'`) to support Netlify → Pxxl App cross-origin requests.
+
+The server deploys to **Pxxl App** (migrated from Render). Deployment config lives in `server/pxxl.toml` — sets `startCommand`, a no-op `buildCommand` (the server has no build step), and `port`. The Pxxl project's **Base Directory** setting must be `server` so it finds that file. `ANTHROPIC_API_KEY` is set as a Pxxl dashboard secret, never committed.
 
 ---
 
@@ -55,7 +57,7 @@ The server exits on startup if `ANTHROPIC_API_KEY` is not set. Copy `server/.env
 ```
 VITE_API_URL=http://localhost:3001
 ```
-All `fetch` calls use a module-level `const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:10000'` then `` `${API_URL}/api/...` ``. In local dev, set to `http://localhost:3001`. In production (e.g. Netlify), set to the deployed Render server URL.
+All `fetch` calls use a module-level `const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:10000'` then `` `${API_URL}/api/...` ``. In local dev, set to `http://localhost:3001`. In production (e.g. Netlify), set to the deployed Pxxl App server URL.
 
 **The API key is never sent to the client.** It lives only in the server environment and is used server-side for all Anthropic API calls.
 
@@ -93,7 +95,7 @@ All `fetch` calls use a module-level `const API_URL = import.meta.env.VITE_API_U
 
 | Path | Purpose |
 |---|---|
-| `index.js` | Express setup. Validates `ANTHROPIC_API_KEY` on startup. Mounts `/api/review`, `/api/fix`, `/api/extract`. Serves on `PORT` (default 3001). |
+| `index.js` | Express setup. Validates `ANTHROPIC_API_KEY` on startup. Mounts `/api/review`, `/api/fix`, `/api/extract`. Health checks at `GET /health` and `GET /api/health` (both return `{ ok: true }`). Serves on `PORT` (default `10000`). |
 | `routes/review.js` | `POST /api/review`. Accepts multipart form with a `file` field. Routes `.docx`/`.pdf`/`.md`/`.txt` to the correct parser. Always uses Anthropic. Returns `prdText` (extracted plain text) in the response for use by Fix Mode. |
 | `routes/fix.js` | `POST /api/fix`. Accepts JSON `{ categoryLabel, issue, whyItMatters, suggestedFix }`. Returns `{ fixText }` — 2–3 sentences of AI-generated PRD amendment text. Uses `claude-haiku-4-5-20251001` (fast/cheap). |
 | `routes/extract.js` | `POST /api/extract`. Accepts multipart `file` field. Parses `.docx`/`.pdf`/`.md`/`.txt` using the same parsers as `/api/review`. Returns `{ text }` — no AI call, pure text extraction. Used by `InputPanel` for auto-paste on file upload. |
