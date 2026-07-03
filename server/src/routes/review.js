@@ -55,7 +55,7 @@ router.post('/', upload.single('file'), async (req, res) => {
     const categories = validateAndParse(rawResponse);
 
     // --- Compute overall score and verdict ---
-    const weights = { design: 0.25, engineering: 0.30, product: 0.25, security: 0.20 };
+    const weights = { product: 0.40, design: 0.30, engineering: 0.30 };
     const overallScore = Math.round(
       Object.entries(weights).reduce((sum, [key, w]) => sum + (categories[key].score * w), 0)
     );
@@ -71,8 +71,9 @@ router.post('/', upload.single('file'), async (req, res) => {
     }
 
     // Build overall summary from category verdicts
-    const overallSummary = Object.entries(categories)
-      .map(([name, data]) => `${name.charAt(0).toUpperCase() + name.slice(1)}: ${data.verdict}`)
+    const CATEGORY_ORDER = ['product', 'design', 'engineering'];
+    const overallSummary = CATEGORY_ORDER
+      .map(key => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${categories[key].verdict}`)
       .join(' ');
 
     return res.json({

@@ -5,7 +5,7 @@ import CategoryCard from './CategoryCard';
 import CategoryModal from './CategoryModal';
 import Button from './Button';
 
-const CATEGORY_ORDER = ['design', 'engineering', 'product', 'security'];
+const CATEGORY_ORDER = ['product', 'design', 'engineering'];
 
 // ─── WIP Modal ────────────────────────────────────────────────────────────────
 

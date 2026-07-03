@@ -134,11 +134,9 @@ ${section.recommendations.map((r, i) => `${i + 1}. ${r}`).join('\n')}
 function DesignIcon(props)      { return <svg {...props} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>; }
 function EngineeringIcon(props) { return <svg {...props} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>; }
 function ProductIcon(props)     { return <svg {...props} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>; }
-function SecurityIcon(props)    { return <svg {...props} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>; }
 
 export const CATEGORY_META = {
-  design:      { label: 'Design',      Icon: DesignIcon,      description: 'UX, flows, accessibility & responsiveness' },
-  engineering: { label: 'Engineering', Icon: EngineeringIcon, description: 'Feasibility, data model & acceptance criteria' },
-  product:     { label: 'Product',     Icon: ProductIcon,     description: 'Goals, metrics & scope clarity' },
-  security:    { label: 'Security',    Icon: SecurityIcon,    description: 'Auth, privacy & compliance' },
+  product:     { label: 'Product',     Icon: ProductIcon,     description: 'Overview, goals, user stories & requirements' },
+  design:      { label: 'Design',      Icon: DesignIcon,      description: 'User journey, experience & screen states' },
+  engineering: { label: 'Engineering', Icon: EngineeringIcon, description: 'Technical clarity, dependencies & risks' },
 };

@@ -2,7 +2,7 @@
 
 ## What this app does
 
-A web app that lets users upload or paste a PRD (Product Requirements Document) and receive a structured AI-powered review across four dimensions: Design, Engineering, Product, and Security. Results include a score, verdict, analysis, and recommendations per category, plus an overall score and verdict. Users can download the full report as PDF or Word (.docx).
+A web app that lets users upload or paste a PRD (Product Requirements Document) and receive a structured AI-powered review across three dimensions: Product, Design, and Engineering. Results include a score, verdict, analysis, and recommendations per category, plus an overall score and verdict. Users can download the full report as PDF or Word (.docx).
 
 The app also includes a PRD Template reference view with sections filterable by document type (New PRD / Enhancement / Bug) and audience (All / Design / Engineering / Product).
 
@@ -74,7 +74,7 @@ All `fetch` calls use a module-level `const API_URL = import.meta.env.VITE_API_U
 | `components/Button.jsx` | **Reusable button component.** Variants: `primary` (indigo filled), `secondary` (dark filled), `outline` (gray bordered), `indigo-outline` (indigo bordered), `ghost` (transparent hover). Sizes: `sm` (`h-9 px-3.5`), `md` (`h-12 px-5`, default), `lg` (`h-14 px-7`). Props: `variant`, `size`, `loading` (shows spinner), `fullWidth`, `icon` (before children), `iconAfter` (after children). Always `rounded-2xl`. All CTA buttons across the app use this component. |
 | `components/InputPanel.jsx` | Unified input panel for the left workspace column. Single drag-drop container (no segmented control). Top strip: "Drop a file or click to upload" trigger (shows spinner + "Extracting text…" while parsing). Textarea fills the middle. Bottom: `<Button variant="primary" fullWidth>` "Review PRD" CTA. **Auto-extract for all file types**: `.md` via `FileReader.readAsText()`; `.docx`/`.pdf` via `POST /api/extract` → populates textarea (no immediate submit). `loading` and `extracting` states both disable the CTA. `onSourceChange` informs App.jsx of filename/source. Props: `{ onSubmit, loading, onSourceChange }`. |
 | `components/UploadZone.jsx` | Superseded by `InputPanel.jsx` + inlined ProcessingView in App.jsx. File is kept but unused. |
-| `components/ReviewDashboard.jsx` | Results view. No own max-width — App.jsx right panel handles layout. `px-6 py-6` padding. **Category order: `['design', 'engineering', 'product', 'security']` — all 4 shown**. Cards rendered in a **2-column grid** (`grid grid-cols-1 sm:grid-cols-2 gap-3`). Owns `openModal` (string\|null, category key) and `showWip` (bool). Clicking a card sets `openModal` → renders `<CategoryModal>`. WIP modal uses scale+fade entry animation. No "Review another PRD" button — left panel always visible. Props: `{ result, onReset }`. |
+| `components/ReviewDashboard.jsx` | Results view. No own max-width — App.jsx right panel handles layout. `px-6 py-6` padding. **Category order: `['product', 'design', 'engineering']` — all 3 shown**. Cards rendered in a **2-column grid** (`grid grid-cols-1 sm:grid-cols-2 gap-3`). Owns `openModal` (string\|null, category key) and `showWip` (bool). Clicking a card sets `openModal` → renders `<CategoryModal>`. WIP modal uses scale+fade entry animation. No "Review another PRD" button — left panel always visible. Props: `{ result, onReset }`. |
 | `components/OverallBanner.jsx` | Compact review header. Top row: verdict pill badge (no icon, text only) + score. Sections: **Key Issues** (each category as a card with label left + status badge right + description, `gap-2` stack), **Next Step**, **Actions** (`<Button primary>` Fix Issues + `<Button outline>` Download dropdown). Download dropdown: `AnimatePresence` scale+fade (`scale: 0.95→1, y: -6→0`, ease `[0.16,1,0.3,1]`, 180ms), `rounded-2xl` panel. **No footer** — left panel always shows input. Props: `{ overall, categories, result, onFixMode }`. |
 | `components/CategoryCard.jsx` | Compact, fully-clickable dashboard card (no accordion). Renders as a single `<Button size="raw">`. Shows: title (left) + status pill (right), large score%, slim `<ScoreBar slim />`. Clicking calls `onClick` → parent opens `CategoryModal`. **Status display labels**: `good`→**Strong**, `caution`→**Needs improvement**, `blocker`→**Missing**. Props: `{ categoryKey, data, onClick }`. |
 | `components/CategoryModal.jsx` | Modal showing full category detail. Backdrop: `bg-black/30 dark:bg-black/60 backdrop-blur-sm`. Content panel: `bg-white dark:bg-[#0B1220] border border-gray-200 dark:border-white/10 rounded-2xl max-w-2xl`. Smooth open/close animation: local `isOpen` state starts `false`, flips to `true` via `requestAnimationFrame` on mount; `handleClose` sets `isOpen=false` then calls `onClose` after 300ms. Backdrop fades via `transition-opacity duration-300`; panel scales+translates via `transform transition-all duration-300 ease-out`. Closes on backdrop click or Escape. Header: category title + Copy button (`Clipboard`/`Check` icons from lucide-react, 2s feedback) + X close. Body: **Issue** / **Why It Matters** / **Suggested Fix** — all text uses `text-gray-700 dark:text-gray-300`. Props: `{ categoryKey, data, onClose }`. |
@@ -103,8 +103,8 @@ All `fetch` calls use a module-level `const API_URL = import.meta.env.VITE_API_U
 | `services/pdfParser.js` | Extracts plain text from `.pdf` using `pdfjs-dist` (v3 legacy/CJS build). `pdf-parse` was removed — it bundles an ancient pdf.js v1.10.100 that references `PDFJS` as a global and is incompatible with Node.js v22+. |
 | `services/anthropicService.js` | Calls Claude (`claude-opus-4-6`, 4096 tokens) with the constructed prompt. |
 | `services/aiRouter.js` | Routes to `anthropicService` or `openaiService` based on `provider` param (always `'anthropic'` in practice). |
-| `utils/promptBuilder.js` | Builds the system prompt and user message from PRD text. Instructs Claude to evaluate across Design, Engineering, Product, Security. |
-| `utils/validateResponse.js` | Extracts JSON from Claude's response, validates against a Zod schema. Returns 422 if schema fails. |
+| `utils/promptBuilder.js` | Builds the system prompt and user message from PRD text. Instructs Claude (as a Senior PM) to evaluate across Product, Design, and Engineering — no Security. Each category has named subcategories with point allocations. Enforces plain-language, beginner-friendly writing style; bans jargon (WCAG, SLA, p95, P0/P1/P2, Given/When/Then). Special rule: missing Overview forces Product score ≤ 39 (blocker). |
+| `utils/validateResponse.js` | Extracts JSON from Claude's response, validates against a Zod schema (`{ product, design, engineering }` — no security). Returns 422 if schema fails. |
 
 ---
 
@@ -122,15 +122,14 @@ Response (200):
 {
   "overall": { "score": 72, "verdict": "CONDITIONAL APPROVAL", "summary": "..." },
   "categories": {
-    "design":      { "score": 80, "status": "good",    "verdict": "...", "summary": "...", "recommendations": ["..."] },
-    "engineering": { "score": 65, "status": "caution", "verdict": "...", "summary": "...", "recommendations": ["..."] },
     "product":     { "score": 75, "status": "good",    "verdict": "...", "summary": "...", "recommendations": ["..."] },
-    "security":    { "score": 55, "status": "caution", "verdict": "...", "summary": "...", "recommendations": ["..."] }
+    "design":      { "score": 80, "status": "good",    "verdict": "...", "summary": "...", "recommendations": ["..."] },
+    "engineering": { "score": 65, "status": "caution", "verdict": "...", "summary": "...", "recommendations": ["..."] }
   }
 }
 ```
 
-Scoring: Design 25%, Engineering 30%, Product 25%, Security 20%.
+Scoring: Product 40%, Design 30%, Engineering 30%. No security category.
 Verdict: any `blocker` → NOT READY TO BUILD; score ≥ 75 → READY TO BUILD; else → CONDITIONAL APPROVAL.
 Also returns `prdText` (string) — the raw extracted text of the uploaded document.
 

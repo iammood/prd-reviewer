@@ -9,10 +9,9 @@ const CategorySchema = z.object({
 });
 
 const ReviewSchema = z.object({
+  product: CategorySchema,
   design: CategorySchema,
   engineering: CategorySchema,
-  product: CategorySchema,
-  security: CategorySchema,
 });
 
 function extractJson(raw) {
