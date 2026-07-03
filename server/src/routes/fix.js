@@ -3,6 +3,8 @@ const Anthropic = require('@anthropic-ai/sdk');
 
 const router = express.Router();
 
+const TIMEOUT_MS = 30_000;
+
 router.post('/', express.json(), async (req, res) => {
   const { categoryLabel, issue, whyItMatters, suggestedFix } = req.body || {};
 
@@ -26,17 +28,23 @@ Write the PRD amendment text now.`;
 
   try {
     const client = new Anthropic({ apiKey });
-    const message = await client.messages.create({
+
+    const request = client.messages.create({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 300,
       system: systemPrompt,
       messages: [{ role: 'user', content: userMessage }],
     });
 
+    const timeoutGuard = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('Request timed out after 30s')), TIMEOUT_MS)
+    );
+
+    const message = await Promise.race([request, timeoutGuard]);
     const fixText = message.content.find(b => b.type === 'text')?.text?.trim() || '';
     return res.json({ fixText });
   } catch (err) {
-    console.error('Fix generation error:', err);
+    console.error('Fix generation error:', err.message);
     return res.status(502).json({ error: `AI error: ${err.message || 'Unknown error'}` });
   }
 });

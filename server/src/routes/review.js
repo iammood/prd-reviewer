@@ -94,8 +94,11 @@ router.post('/', upload.single('file'), async (req, res) => {
     if (err.code === 'AI_SCHEMA_ERROR') {
       return res.status(422).json({ error: `AI response did not match expected schema: ${err.message}` });
     }
+    if (err.code === 'ANTHROPIC_TIMEOUT') {
+      return res.status(504).json({ error: 'The AI review took too long. Please try again.' });
+    }
     console.error('Review error:', err);
-    return res.status(502).json({ error: `AI provider error: ${err.message || 'Unknown error'}` });
+    return res.status(502).json({ error: `Review failed: ${err.message || 'Unknown error'}` });
   }
 });
 
