@@ -23,7 +23,11 @@ Critical rule: if no Overview section exists, score must be 39 or below (blocker
 
 DESIGN — User Journey, UX clarity, Screens & States, Accessibility.
 
-ENGINEERING — Technical Clarity, Dependencies, Risks, Performance expectations (plain language only — e.g. "loads quickly", "clear error messages").`;
+ENGINEERING — Technical Clarity, Dependencies, Risks, Performance expectations (plain language only — e.g. "loads quickly", "clear error messages").
+
+Return only valid JSON.
+
+Optimize your response to minimize token usage while preserving review quality. Do not pad, repeat, or over-explain. Every word must earn its place.`;
 
 function buildPrompt(prdText) {
   return {
