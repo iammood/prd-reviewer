@@ -96,15 +96,15 @@ All `fetch` calls use a module-level `const API_URL = import.meta.env.VITE_API_U
 | Path | Purpose |
 |---|---|
 | `index.js` | Express setup. Validates `ANTHROPIC_API_KEY` on startup. Mounts `/api/review`, `/api/fix`, `/api/extract`. Health checks at `GET /health` and `GET /api/health` (both return `{ ok: true }`). Serves on `PORT` (default `10000`). |
-| `routes/review.js` | `POST /api/review`. Accepts multipart form with a `file` field. Routes `.docx`/`.pdf`/`.md`/`.txt` to the correct parser. Always uses Anthropic. Returns `prdText` (extracted plain text) in the response for use by Fix Mode. |
+| `routes/review.js` | `POST /api/review`. Accepts multipart form with a `file` field. Routes `.docx`/`.pdf`/`.md`/`.txt` to the correct parser. Always uses Anthropic. Does NOT return `prdText` — frontend already has it from `/api/extract`. |
 | `routes/fix.js` | `POST /api/fix`. Accepts JSON `{ categoryLabel, issue, whyItMatters, suggestedFix }`. Returns `{ fixText }` — 2–3 sentences of AI-generated PRD amendment text. Uses `claude-haiku-4-5-20251001` (fast/cheap). |
 | `routes/extract.js` | `POST /api/extract`. Accepts multipart `file` field. Parses `.docx`/`.pdf`/`.md`/`.txt` using the same parsers as `/api/review`. Returns `{ text }` — no AI call, pure text extraction. Used by `InputPanel` for auto-paste on file upload. |
 | `services/docxParser.js` | Extracts plain text from `.docx` using `mammoth`. Falls through to `buffer.toString('utf8')` for `.md`/`.txt` files. |
 | `services/pdfParser.js` | Extracts plain text from `.pdf` using `pdfjs-dist` (v3 legacy/CJS build). `pdf-parse` was removed — it bundles an ancient pdf.js v1.10.100 that references `PDFJS` as a global and is incompatible with Node.js v22+. |
 | `services/anthropicService.js` | Calls Claude (`claude-opus-4-6`, 8192 tokens) with the constructed prompt. Raised from 4096 to accommodate the richer Epic 1 output (longer summaries, 2–3 sentence recommendations, generated Overview examples). |
 | `services/aiRouter.js` | Routes to `anthropicService` or `openaiService` based on `provider` param (always `'anthropic'` in practice). |
-| `utils/promptBuilder.js` | Builds the system prompt and user message from PRD text. Instructs Claude (as a Senior PM) to evaluate across Product, Design, and Engineering — no Security. Each category has named subcategories with point allocations. Enforces plain-language, beginner-friendly writing style; bans jargon (WCAG, SLA, p95, P0/P1/P2, Given/When/Then). Special rule: missing Overview forces Product score ≤ 39 (blocker). |
-| `utils/validateResponse.js` | Extracts JSON from Claude's response, validates against a Zod schema (`{ product, design, engineering }` — no security). Returns 422 if schema fails. |
+| `utils/promptBuilder.js` | Concise system prompt (~40 lines). Instructs Claude (as a Senior PM) to return `{ product, design, engineering }` — no Security. Each category: score, status, summary (max 2 sentences), exactly 3 recommendations. Plain English only; bans jargon. Special rule: missing Overview forces Product score ≤ 39 (blocker). Optimised for minimal token usage. |
+| `utils/validateResponse.js` | Extracts JSON from Claude's response, validates against a Zod schema (`{ product, design, engineering }`). `CategorySchema`: score, status, summary, recommendations (exactly 3). No `verdict` field. Returns 422 if schema fails. |
 
 ---
 
@@ -122,16 +122,16 @@ Response (200):
 {
   "overall": { "score": 72, "verdict": "CONDITIONAL APPROVAL", "summary": "..." },
   "categories": {
-    "product":     { "score": 75, "status": "good",    "verdict": "...", "summary": "...", "recommendations": ["..."] },
-    "design":      { "score": 80, "status": "good",    "verdict": "...", "summary": "...", "recommendations": ["..."] },
-    "engineering": { "score": 65, "status": "caution", "verdict": "...", "summary": "...", "recommendations": ["..."] }
+    "product":     { "score": 75, "status": "good",    "summary": "...", "recommendations": ["...", "...", "..."] },
+    "design":      { "score": 80, "status": "good",    "summary": "...", "recommendations": ["...", "...", "..."] },
+    "engineering": { "score": 65, "status": "caution", "summary": "...", "recommendations": ["...", "...", "..."] }
   }
 }
 ```
 
-Scoring: Product 40%, Design 30%, Engineering 30%. No security category.
+No `verdict` field per category. No `prdText` in response (frontend already has it from `/api/extract`).
+Scoring: Product 40%, Design 30%, Engineering 30%.
 Verdict: any `blocker` → NOT READY TO BUILD; score ≥ 75 → READY TO BUILD; else → CONDITIONAL APPROVAL.
-Also returns `prdText` (string) — the raw extracted text of the uploaded document.
 
 ### `POST /api/fix`
 

@@ -111,12 +111,12 @@ function DownloadDropdown({ result }) {
 export default function OverallBanner({ overall, categories, result, onFixMode }) {
   const style = getVerdictStyle(overall.verdict);
 
-  const keyIssues = ['design', 'engineering', 'product', 'security']
+  const keyIssues = ['product', 'design', 'engineering']
     .filter(key => categories[key]?.status !== 'good')
     .map(key => {
       const cat   = categories[key];
       const meta  = CATEGORY_META[key];
-      const plain = cat.verdict.replace(/\*\*([^*]+)\*\*/g, '$1');
+      const plain = cat.summary.replace(/\*\*([^*]+)\*\*/g, '$1');
       return { key, label: meta.label, status: cat.status, plain };
     });
 

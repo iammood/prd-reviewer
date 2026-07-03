@@ -3,9 +3,8 @@ const { z } = require('zod');
 const CategorySchema = z.object({
   score: z.number().int().min(0).max(100),
   status: z.enum(['good', 'caution', 'blocker']),
-  verdict: z.string().min(1),
   summary: z.string().min(1),
-  recommendations: z.array(z.string()).min(3).max(5),
+  recommendations: z.array(z.string()).min(3).max(3),
 });
 
 const ReviewSchema = z.object({

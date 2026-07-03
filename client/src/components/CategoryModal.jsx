@@ -1,24 +1,19 @@
 import { useEffect, useState } from 'react';
 import { Clipboard, Check } from 'lucide-react';
 import Button from './Button';
-import { CATEGORY_META, renderText, parseParagraphs, cleanMarkdown } from '../utils/statusHelpers.jsx';
+import { CATEGORY_META, renderText, cleanMarkdown } from '../utils/statusHelpers.jsx';
 
 const SECTION_LABEL = 'text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2';
 
 function buildCopyText(label, data) {
-  const paragraphs    = parseParagraphs(data.summary);
-  const whyItMatters  = cleanMarkdown(paragraphs[0] || '');
-  const issue         = cleanMarkdown(data.verdict);
-  const recs          = data.recommendations.map((r, i) => `${i + 1}. ${cleanMarkdown(r)}`).join('\n');
+  const summary = cleanMarkdown(data.summary);
+  const recs    = data.recommendations.map((r, i) => `${i + 1}. ${cleanMarkdown(r)}`).join('\n');
 
   return [
     label,
     '',
-    'ISSUE',
-    issue,
-    '',
-    'WHY IT MATTERS',
-    whyItMatters,
+    'SUMMARY',
+    summary,
     ...(recs ? ['', 'SUGGESTED FIX', recs] : []),
   ].join('\n');
 }
@@ -27,9 +22,7 @@ export default function CategoryModal({ categoryKey, data, onClose }) {
   const [copied, setCopied] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
-  const meta         = CATEGORY_META[categoryKey] || { label: categoryKey };
-  const paragraphs   = parseParagraphs(data.summary);
-  const whyItMatters = paragraphs[0] || '';
+  const meta = CATEGORY_META[categoryKey] || { label: categoryKey };
 
   useEffect(() => { requestAnimationFrame(() => setIsOpen(true)); }, []);
 
@@ -105,23 +98,13 @@ export default function CategoryModal({ categoryKey, data, onClose }) {
         {/* ── Body ── */}
         <div className="px-6 py-5 flex flex-col gap-5 overflow-y-auto max-h-[70vh]">
 
-          {/* Issue */}
+          {/* Summary */}
           <div>
-            <p className={SECTION_LABEL}>Issue</p>
+            <p className={SECTION_LABEL}>Summary</p>
             <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-              {renderText(data.verdict)}
+              {renderText(data.summary)}
             </p>
           </div>
-
-          {/* Why It Matters */}
-          {whyItMatters && (
-            <div>
-              <p className={SECTION_LABEL}>Why It Matters</p>
-              <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-                {renderText(whyItMatters)}
-              </p>
-            </div>
-          )}
 
           {/* Suggested Fix */}
           {data.recommendations.length > 0 && (

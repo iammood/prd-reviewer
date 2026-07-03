@@ -95,17 +95,9 @@ export async function downloadReviewPdf(result) {
     text(`Score: ${cat.score}%  ·  Status: ${cat.status.charAt(0).toUpperCase() + cat.status.slice(1)}`, { size: 10, color: [80, 80, 80] });
     gap(2);
 
-    text('Issue', { size: 10, bold: true, color: [60, 60, 60] });
+    text('Summary', { size: 10, bold: true, color: [60, 60, 60] });
     gap(1);
-    const cleanVerdict = cleanMarkdown(cat.verdict);
-    text(cleanVerdict, { size: 10, color: [50, 50, 50] });
-    gap(3);
-
-    text('Why It Matters', { size: 10, bold: true, color: [60, 60, 60] });
-    gap(1);
-    const paras = cat.summary.split('\n').map(l => l.replace(/^#{1,6}\s+/, '').trim()).filter(Boolean);
-    const cleanWhy = cleanMarkdown(paras[0] || '');
-    text(cleanWhy, { size: 10, color: [60, 60, 60] });
+    text(cleanMarkdown(cat.summary), { size: 10, color: [50, 50, 50] });
     gap(3);
 
     text('Suggested Fix', { size: 10, bold: true, color: [60, 60, 60] });
@@ -162,8 +154,6 @@ export async function downloadReviewDocx(result) {
   for (const key of CATEGORY_ORDER) {
     const cat = result.categories[key];
     if (!cat) continue;
-    const paras = cat.summary.split('\n').map(l => l.replace(/^#{1,6}\s+/, '').trim()).filter(Boolean);
-
     children.push(h2(CATEGORY_LABELS[key]));
     children.push(new Paragraph({
       children: [
@@ -173,10 +163,8 @@ export async function downloadReviewDocx(result) {
       ],
       spacing: { after: 80 },
     }));
-    children.push(label('Issue'));
-    children.push(body(cat.verdict));
-    children.push(label('Why It Matters'));
-    children.push(body(paras[0] || ''));
+    children.push(label('Summary'));
+    children.push(body(cat.summary));
     children.push(label('Suggested Fix'));
     cat.recommendations.forEach((rec, i) => children.push(numbered(rec, i + 1)));
   }

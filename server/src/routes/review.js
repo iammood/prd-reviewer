@@ -70,10 +70,13 @@ router.post('/', upload.single('file'), async (req, res) => {
       verdict = 'CONDITIONAL APPROVAL';
     }
 
-    // Build overall summary from category verdicts
+    // Build overall summary from category summaries (first sentence each)
     const CATEGORY_ORDER = ['product', 'design', 'engineering'];
     const overallSummary = CATEGORY_ORDER
-      .map(key => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${categories[key].verdict}`)
+      .map(key => {
+        const first = categories[key].summary.split(/\.\s+/)[0].trim();
+        return first.endsWith('.') ? first : `${first}.`;
+      })
       .join(' ');
 
     return res.json({
@@ -83,7 +86,6 @@ router.post('/', upload.single('file'), async (req, res) => {
         summary: overallSummary,
       },
       categories,
-      prdText,
     });
   } catch (err) {
     if (err.status === 400) {
