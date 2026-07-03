@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { CATEGORY_META, getVerdictStyle, cleanMarkdown, parseParagraphs } from '../utils/statusHelpers.jsx';
+import { mapError } from '../utils/errorMapper';
 import { downloadUpdatedPrdPdf, downloadUpdatedPrdDocx } from '../utils/downloadReport';
 import Button from './Button';
 
@@ -333,28 +334,40 @@ export default function FixMode({ result, categoryKey, onClose }) {
     setGenerating(true);
     setGenerateError('');
     try {
-      const res  = await fetch(`${API_URL}/api/fix`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          categoryLabel: step.categoryLabel,
-          issue:         step.issue,
-          whyItMatters:  step.whyItMatters,
-          suggestedFix:  step.suggestedFix,
-        }),
-      });
-      const text = await res.text();
+      let res;
+      try {
+        res = await fetch(`${API_URL}/api/fix`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            categoryLabel: step.categoryLabel,
+            issue:         step.issue,
+            whyItMatters:  step.whyItMatters,
+            suggestedFix:  step.suggestedFix,
+          }),
+        });
+      } catch (err) {
+        setGenerateError(mapError({ err, context: 'fix' }));
+        return;
+      }
+
+      const rawText = await res.text();
       let data;
       try {
-        data = JSON.parse(text);
-      } catch (e) {
-        console.error('Invalid JSON response:', text);
-        throw e;
+        data = JSON.parse(rawText);
+      } catch (err) {
+        console.error('[fix] non-JSON response (status', res.status + '):', rawText.slice(0, 300));
+        setGenerateError(mapError({ err, status: res.status, context: 'fix' }));
+        return;
       }
-      if (!res.ok) throw new Error(data.error || 'Generation failed');
+
+      if (!res.ok) {
+        console.error('[fix] error response', res.status, '—', data?.error);
+        setGenerateError(mapError({ status: res.status, serverMessage: data?.error, context: 'fix' }));
+        return;
+      }
+
       setInputs(prev => ({ ...prev, [step.id]: data.fixText }));
-    } catch (err) {
-      setGenerateError(err.message);
     } finally {
       setGenerating(false);
     }

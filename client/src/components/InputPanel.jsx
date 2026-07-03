@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import Button from './Button';
+import { mapError } from '../utils/errorMapper';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:10000';
 const ACCEPTED = ['.docx', '.pdf', '.md'];
@@ -36,19 +37,32 @@ export default function InputPanel({ onSubmit, loading, onSourceChange }) {
       try {
         const fd = new FormData();
         fd.append('file', file);
-        const res = await fetch(`${API_URL}/api/extract`, { method: 'POST', body: fd });
+
+        let res;
+        try {
+          res = await fetch(`${API_URL}/api/extract`, { method: 'POST', body: fd });
+        } catch (err) {
+          setError(mapError({ err, context: 'extract' }));
+          return;
+        }
+
         const rawText = await res.text();
         let data;
         try {
           data = JSON.parse(rawText);
         } catch (err) {
-          console.error('Extract — non-JSON response:', rawText);
-          throw new Error('Server returned an invalid response. Check that VITE_API_URL is set correctly.');
+          console.error('[extract] non-JSON response (status', res.status + '):', rawText.slice(0, 300));
+          setError(mapError({ err, status: res.status, context: 'extract' }));
+          return;
         }
-        if (!res.ok || !data.success) throw new Error(data?.error || 'Failed to extract text');
+
+        if (!res.ok || !data.success) {
+          console.error('[extract] error response', res.status, '—', data?.error);
+          setError(mapError({ status: res.status, serverMessage: data?.error, context: 'extract' }));
+          return;
+        }
+
         setPasteText(data.text || '');
-      } catch (err) {
-        setError('Could not read file: ' + err.message);
       } finally {
         setExtracting(false);
       }
