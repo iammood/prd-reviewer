@@ -68,11 +68,12 @@ All `fetch` calls use a module-level `const API_URL = import.meta.env.VITE_API_U
 | Path | Purpose |
 |---|---|
 | `components/LandingPage.jsx` | Marketing landing page shown on first load. Sections: Hero, Pain, Solution, How it works, Output preview, Before/After, Sample review, Inline demo (simulated, no backend), Final CTA. `onEnter` prop callback sets `showLanding=false` in App.jsx to reveal the main app. Inline demo uses `MOCK_RESULT` data and a 1.8s timeout to simulate a review. |
-| `App.jsx` | Root component. Renders `<LandingPage onEnter={...}>` when `showLanding=true` (default). After `onEnter` is called, renders the **full-width workspace layout** (`h-screen flex flex-col overflow-hidden`, `max-w-[1280px]`). **Two-column layout**: left panel (`w-2/5`, border-r) + right panel (`flex-1`). **Tab nav** in header: `Review PRD` \| `PRD Template` with `layoutId="nav-pill"` animated pill (tabs disabled during processing). Manages `tab` (`'review'`\|`'template'`), review flow (`idle`\|`loading`\|`done`\|`error`), `uiReady` (bool), `source` (string for ProcessingView filename), and template state (`tmplType`, `tmplAudience`, `selectedId`). **`uiReady` gates switch from ProcessingView to ReviewDashboard** — set via `onComplete` from ProcessingView. `showProcessing = status==='loading' \|\| (status==='done' && !uiReady)`. `showResults = status==='done' && uiReady`. **ProcessingView is inlined in App.jsx** (not in UploadZone). Left panel: `InputPanel` (review tab) or `TemplateSidebar` (template tab). Right panel: EmptyState \| ProcessingView \| ErrorState \| `ReviewDashboard` (review tab) or `TemplateDetail` (template tab). All CTA buttons use `<Button>` component. |
-| `hooks/useReview.js` | Handles the `/api/review` POST request. `submit(fileOrText)` accepts a `File` object or a plain string (paste). |
+| `App.jsx` | Root component. Inlines `ProcessingView` — a 6-step progress tracker: Uploading document → Reading document → Reviewing Product → Reviewing Design → Reviewing Engineering → Preparing report. Steps animate with fake timers until API returns, then fast-forward. On error, the failed step shows a red ✕ and a "Try again" button (inline — no separate ErrorState). `showProcessing = status==='loading' \|\| (status==='done' && !uiReady) \|\| status==='error'`. `ProcessingView` props: `source`, `apiDone`, `onComplete`, `error`, `failedAt` (server string: `'uploading'\|'reading'\|'reviewing'\|'preparing'\|null`), `onRetry`. `FAIL_STEP` maps server strings to STEPS indices. `showResults = status==='done' && uiReady`. Tab nav disabled during processing. |
+| `hooks/useReview.js` | Handles `/api/review` POST. `submit(fileOrText)` stores input in `lastInputRef` for retry. Exposes `retry()` (re-calls `submit` with last input), `failedAt` (server `failedAt` string or `'uploading'` for network errors), and `reset()`. All fetch/JSON/HTTP failures go through `mapError` before setting `error` string. |
 | `hooks/useTheme.js` | Dark/light mode toggle. Persists preference in `localStorage` under `prd_reviewer_theme`. Applies `dark` class to `<html>`. |
 | `components/Button.jsx` | **Reusable button component.** Variants: `primary` (indigo filled), `secondary` (dark filled), `outline` (gray bordered), `indigo-outline` (indigo bordered), `ghost` (transparent hover). Sizes: `sm` (`h-9 px-3.5`), `md` (`h-12 px-5`, default), `lg` (`h-14 px-7`). Props: `variant`, `size`, `loading` (shows spinner), `fullWidth`, `icon` (before children), `iconAfter` (after children). Always `rounded-2xl`. All CTA buttons across the app use this component. |
 | `components/InputPanel.jsx` | Unified input panel for the left workspace column. Single drag-drop container (no segmented control). Top strip: "Drop a file or click to upload" trigger (shows spinner + "Extracting text…" while parsing). Textarea fills the middle. Bottom: `<Button variant="primary" fullWidth>` "Review PRD" CTA. **Auto-extract for all file types**: `.md` via `FileReader.readAsText()`; `.docx`/`.pdf` via `POST /api/extract` → populates textarea (no immediate submit). `loading` and `extracting` states both disable the CTA. `onSourceChange` informs App.jsx of filename/source. Props: `{ onSubmit, loading, onSourceChange }`. |
+| `components/SuggestionsPanel.jsx` | Renders after the category card grid in `ReviewDashboard`. Two cards: **Suggested Improvements** (5 coloured bullet lists — Strengths emerald, Weaknesses amber, Missing Information red, Quick Wins indigo, Highest Impact indigo — plus an Overall Recommendation paragraph) and **Claude Update Prompt** (generated client-side from review data via `buildClaudePrompt(result)`, copy button, monospace pre block). Returns `null` if `result.suggestions` is absent. No AI call — prompt is derived from existing review data. |
 | `components/UploadZone.jsx` | Superseded by `InputPanel.jsx` + inlined ProcessingView in App.jsx. File is kept but unused. |
 | `components/ReviewDashboard.jsx` | Results view. No own max-width — App.jsx right panel handles layout. `px-6 py-6` padding. **Category order: `['product', 'design', 'engineering']` — all 3 shown**. Cards rendered in a **2-column grid** (`grid grid-cols-1 sm:grid-cols-2 gap-3`). Owns `openModal` (string\|null, category key) and `showWip` (bool). Clicking a card sets `openModal` → renders `<CategoryModal>`. WIP modal uses scale+fade entry animation. No "Review another PRD" button — left panel always visible. Props: `{ result, onReset }`. |
 | `components/OverallBanner.jsx` | Compact review header. Top row: verdict pill badge (no icon, text only) + score. Sections: **Key Issues** (each category as a card with label left + status badge right + description, `gap-2` stack), **Next Step**, **Actions** (`<Button primary>` Fix Issues + `<Button outline>` Download dropdown). Download dropdown: `AnimatePresence` scale+fade (`scale: 0.95→1, y: -6→0`, ease `[0.16,1,0.3,1]`, 180ms), `rounded-2xl` panel. **No footer** — left panel always shows input. Props: `{ overall, categories, result, onFixMode }`. |
@@ -97,15 +98,15 @@ All `fetch` calls use a module-level `const API_URL = import.meta.env.VITE_API_U
 | Path | Purpose |
 |---|---|
 | `index.js` | Express setup. Validates `ANTHROPIC_API_KEY` on startup. Mounts `/api/review`, `/api/fix`, `/api/extract`. Health checks at `GET /health` and `GET /api/health` (both return `{ ok: true }`). Serves on `PORT` (default `10000`). |
-| `routes/review.js` | `POST /api/review`. Accepts multipart form with a `file` field. Routes `.docx`/`.pdf`/`.md`/`.txt` to the correct parser. Always uses Anthropic. Does NOT return `prdText` — frontend already has it from `/api/extract`. |
+| `routes/review.js` | `POST /api/review`. Per-phase error handling — each stage (upload, reading, reviewing, preparing) has its own try/catch and returns `{ error, failedAt }` with the matching phase key. Multer errors are caught inline (not by global handler) so they also carry `failedAt: 'uploading'`. Does NOT return `prdText`. |
 | `routes/fix.js` | `POST /api/fix`. Accepts JSON `{ categoryLabel, issue, whyItMatters, suggestedFix }`. Returns `{ fixText }` — 2–3 sentences of AI-generated PRD amendment text. Uses `claude-haiku-4-5-20251001` (fast/cheap). Has a 30s `Promise.race()` timeout. |
 | `routes/extract.js` | `POST /api/extract`. Accepts multipart `file` field. Delegates to `pdfParser`/`docxParser` services (no inline parsing). Returns `{ success: true, text }` on success; `{ error: "Unable to read this document." }` (HTTP 422) on parse failure. Used by `InputPanel` for auto-paste on file upload. |
 | `services/docxParser.js` | Extracts plain text from `.docx` using `mammoth`. Falls through to `buffer.toString('utf8')` for `.md`/`.txt` files. |
 | `services/pdfParser.js` | Extracts plain text from `.pdf` using `pdfjs-dist` v3 legacy/CJS build (`pdfjs-dist/legacy/build/pdf.js`). `pdf-parse` was removed — it bundles an ancient pdf.js v1.10.100 that references `PDFJS` as a global and causes uncaught exceptions on Node.js v22+, crashing the process. `GlobalWorkerOptions.workerSrc` is set to `''` to disable browser workers in Node.js. Library is lazy-required inside the function so a broken install never crashes the module at load time. |
-| `services/anthropicService.js` | Calls Claude (`claude-opus-4-6`, 8192 tokens). Has a 60s `Promise.race()` timeout that throws `{ code: 'ANTHROPIC_TIMEOUT' }` — caught in `review.js` and returned as HTTP 504. Logs estimated input tokens (chars/4), actual usage from `message.usage`, and wall-clock duration. |
+| `services/anthropicService.js` | Calls Claude (`claude-opus-4-6`, 8192 tokens). SDK `maxRetries` set to 0 — retries are managed manually. On 429/502/503 or `ANTHROPIC_TIMEOUT`: waits 2s and retries once. Each attempt has a 60s `Promise.race()` timeout (`ANTHROPIC_TIMEOUT` code). Max wall-clock per review: ~122s. Logs attempt count, duration, estimated input tokens, and actual `message.usage`. |
 | `services/aiRouter.js` | Routes to `anthropicService` or `openaiService` based on `provider` param (always `'anthropic'` in practice). |
-| `utils/promptBuilder.js` | Concise system prompt (~40 lines). Instructs Claude (as a Senior PM) to return `{ product, design, engineering }` — no Security. Each category: score, status, summary (max 2 sentences), exactly 3 recommendations. Plain English only; bans jargon. Special rule: missing Overview forces Product score ≤ 39 (blocker). Optimised for minimal token usage. |
-| `utils/validateResponse.js` | Extracts JSON from Claude's response, validates against a Zod schema (`{ product, design, engineering }`). `CategorySchema`: score, status, summary, recommendations (exactly 3). No `verdict` field. Returns 422 if schema fails. |
+| `utils/promptBuilder.js` | Concise system prompt (~40 lines). Instructs Claude (as a Senior PM) to return `{ product, design, engineering }` — no Security. Each category: score, status, summary (max 2 sentences), exactly 3 recommendations. Plain English only; bans jargon. Special rule: missing Overview forces Product score ≤ 39 (blocker). Optimised for minimal token usage. **Epic 2 additions (appended, never rewritten):** language rules banning WCAG/SLA/p95/uptime%/concurrent-users/Given-When-Then/P0-P1-P2; instructions to also return a `suggestions` object (strengths, weaknesses, missingInformation, quickWins, highestImpact, overallRecommendation — 2–4 items each, 1 sentence, plain English). |
+| `utils/validateResponse.js` | Extracts JSON from Claude's response, validates against a Zod schema. `CategorySchema`: score, status, summary, recommendations (exactly 3). `SuggestionsSchema`: strengths, weaknesses, missingInformation, quickWins, highestImpact (all `string[]`), overallRecommendation (`string`). `ReviewSchema` = 3 categories + `suggestions` (optional). `validateAndParse` returns `{ categories, suggestions }` — caller destructures both. |
 
 ---
 
@@ -126,6 +127,14 @@ Response (200):
     "product":     { "score": 75, "status": "good",    "summary": "...", "recommendations": ["...", "...", "..."] },
     "design":      { "score": 80, "status": "good",    "summary": "...", "recommendations": ["...", "...", "..."] },
     "engineering": { "score": 65, "status": "caution", "summary": "...", "recommendations": ["...", "...", "..."] }
+  },
+  "suggestions": {
+    "strengths":             ["..."],
+    "weaknesses":            ["..."],
+    "missingInformation":    ["..."],
+    "quickWins":             ["..."],
+    "highestImpact":         ["..."],
+    "overallRecommendation": "..."
   }
 }
 ```
@@ -133,6 +142,12 @@ Response (200):
 No `verdict` field per category. No `prdText` in response (frontend already has it from `/api/extract`).
 Scoring: Product 40%, Design 30%, Engineering 30%.
 Verdict: any `blocker` → NOT READY TO BUILD; score ≥ 75 → READY TO BUILD; else → CONDITIONAL APPROVAL.
+
+Error responses include `failedAt` to tell the client exactly which step failed:
+```json
+{ "error": "...", "failedAt": "uploading" }
+```
+`failedAt` values: `"uploading"` | `"reading"` | `"reviewing"` | `"preparing"`. The client maps these to step indices in `ProcessingView` via `FAIL_STEP`.
 
 ### `POST /api/fix`
 

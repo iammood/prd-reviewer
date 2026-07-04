@@ -32,35 +32,40 @@ function MoonIcon() {
 // ─── Processing view ──────────────────────────────────────────────────────────
 
 const STEPS = [
-  'Breaking down document',
-  'Sending to AI',
-  'Reviewing design',
-  'Reviewing engineering',
-  'Reviewing security',
-  'Finalizing your review…',
+  'Uploading document',
+  'Reading document',
+  'Reviewing Product',
+  'Reviewing Design',
+  'Reviewing Engineering',
+  'Preparing report',
 ];
 const LAST           = STEPS.length - 1;
-const STEP_DURATIONS = [2800, 2800, 2600, 2200, 1600, 0];
+const STEP_DURATIONS = [1000, 1500, 4000, 3500, 3000, 0];
 const MIN_MS         = 380;
 const FINAL_PAUSE    = 750;
 
-function ProcessingView({ source, apiDone, onComplete }) {
+// Maps server failedAt string → STEPS index
+const FAIL_STEP = { uploading: 0, reading: 1, reviewing: 2, preparing: 5 };
+
+function ProcessingView({ source, apiDone, onComplete, error, failedAt, onRetry }) {
   const [phase,   setPhase]   = useState('normal');
   const [current, setCurrent] = useState(0);
   const allDone = phase === 'completing';
 
   useEffect(() => {
+    if (error) return;
     if (phase !== 'normal') return;
     if (current >= LAST - 1) return;
     const t = setTimeout(() => setCurrent(c => c + 1), STEP_DURATIONS[current]);
     return () => clearTimeout(t);
-  }, [phase, current]);
+  }, [phase, current, error]);
 
   useEffect(() => {
-    if (apiDone && phase === 'normal') setPhase('fast');
-  }, [apiDone, phase]);
+    if (!error && apiDone && phase === 'normal') setPhase('fast');
+  }, [apiDone, phase, error]);
 
   useEffect(() => {
+    if (error) return;
     if (phase !== 'fast') return;
     const isOnLast = current >= LAST;
     const t = setTimeout(() => {
@@ -68,7 +73,7 @@ function ProcessingView({ source, apiDone, onComplete }) {
       else setCurrent(c => c + 1);
     }, isOnLast ? FINAL_PAUSE : MIN_MS);
     return () => clearTimeout(t);
-  }, [phase, current]);
+  }, [phase, current, error]);
 
   useEffect(() => {
     if (phase !== 'completing') return;
@@ -77,6 +82,18 @@ function ProcessingView({ source, apiDone, onComplete }) {
   }, [phase, onComplete]);
 
   const progress = allDone ? 100 : Math.round((current / LAST) * 100);
+
+  function stepState(i) {
+    if (error) {
+      const failIdx = failedAt != null ? (FAIL_STEP[failedAt] ?? current) : current;
+      if (i < failIdx)   return 'complete';
+      if (i === failIdx) return 'failed';
+      return 'pending';
+    }
+    if (i < current || allDone) return 'complete';
+    if (i === current && !allDone) return 'active';
+    return 'pending';
+  }
 
   return (
     <div className="w-full flex flex-col items-center gap-6">
@@ -89,29 +106,31 @@ function ProcessingView({ source, apiDone, onComplete }) {
         <span className="truncate font-medium">{source}</span>
       </div>
 
-      <div className="w-full max-w-xs h-1 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
-        <motion.div
-          className="h-full bg-indigo-500 rounded-full"
-          animate={{ width: `${progress}%` }}
-          transition={{ duration: 0.4, ease: 'easeOut' }}
-        />
-      </div>
+      {!error && (
+        <div className="w-full max-w-xs h-1 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
+          <motion.div
+            className="h-full bg-indigo-500 rounded-full"
+            animate={{ width: `${progress}%` }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+          />
+        </div>
+      )}
 
       <div className="w-full max-w-xs flex flex-col gap-3">
         {STEPS.map((label, i) => {
-          const isComplete = i < current || allDone;
-          const isCurrent  = i === current && !allDone;
+          const state = stepState(i);
           return (
             <motion.div key={label} className="flex items-center gap-3"
               initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.25, delay: i * 0.06, ease: 'easeOut' }}>
               <span className={`relative flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center ${
-                isComplete ? 'bg-emerald-100 dark:bg-emerald-900/50 text-emerald-500 dark:text-emerald-400'
-                  : isCurrent ? 'text-indigo-500 dark:text-indigo-400'
-                  : 'text-gray-300 dark:text-gray-700'
+                state === 'complete' ? 'bg-emerald-100 dark:bg-emerald-900/50 text-emerald-500 dark:text-emerald-400'
+                : state === 'active'  ? 'text-indigo-500 dark:text-indigo-400'
+                : state === 'failed'  ? 'bg-red-100 dark:bg-red-900/40 text-red-500 dark:text-red-400'
+                : 'text-gray-300 dark:text-gray-700'
               }`}>
                 <AnimatePresence mode="wait" initial={false}>
-                  {isComplete ? (
+                  {state === 'complete' && (
                     <motion.span key="check" className="flex items-center justify-center"
                       initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
                       exit={{ scale: 0, opacity: 0 }} transition={{ duration: 0.18, ease: 'backOut' }}>
@@ -119,7 +138,8 @@ function ProcessingView({ source, apiDone, onComplete }) {
                         <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clipRule="evenodd" />
                       </svg>
                     </motion.span>
-                  ) : isCurrent ? (
+                  )}
+                  {state === 'active' && (
                     <motion.span key="spinner" className="flex items-center justify-center"
                       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }}>
                       <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
@@ -127,7 +147,17 @@ function ProcessingView({ source, apiDone, onComplete }) {
                         <path className="opacity-80" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                       </svg>
                     </motion.span>
-                  ) : (
+                  )}
+                  {state === 'failed' && (
+                    <motion.span key="x" className="flex items-center justify-center"
+                      initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+                      exit={{ scale: 0, opacity: 0 }} transition={{ duration: 0.18, ease: 'backOut' }}>
+                      <svg className="w-3 h-3" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
+                      </svg>
+                    </motion.span>
+                  )}
+                  {state === 'pending' && (
                     <motion.span key="dot" className="flex items-center justify-center"
                       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }}>
                       <span className="w-1.5 h-1.5 rounded-full bg-gray-300 dark:bg-gray-700" />
@@ -136,14 +166,24 @@ function ProcessingView({ source, apiDone, onComplete }) {
                 </AnimatePresence>
               </span>
               <span className={`text-sm transition-colors duration-200 ${
-                isComplete ? 'text-gray-400 dark:text-gray-500'
-                  : isCurrent ? 'text-gray-800 dark:text-white font-medium'
-                  : 'text-gray-300 dark:text-gray-600'
+                state === 'complete' ? 'text-gray-400 dark:text-gray-500'
+                : state === 'active'  ? 'text-gray-800 dark:text-white font-medium'
+                : state === 'failed'  ? 'text-red-600 dark:text-red-400 font-medium'
+                : 'text-gray-300 dark:text-gray-600'
               }`}>{label}</span>
             </motion.div>
           );
         })}
       </div>
+
+      {error && (
+        <div className="flex flex-col items-center gap-3 pt-1">
+          <p className="text-xs text-gray-500 dark:text-gray-400 text-center max-w-xs leading-relaxed">
+            {error}
+          </p>
+          <Button variant="primary" onClick={onRetry}>Try again</Button>
+        </div>
+      )}
     </div>
   );
 }
@@ -188,7 +228,7 @@ const fade = {
 // ─── App ──────────────────────────────────────────────────────────────────────
 
 export default function App() {
-  const { submit, status, result, error, reset } = useReview();
+  const { submit, retry, status, result, error, failedAt, reset } = useReview();
   const { theme, toggle } = useTheme();
   const [showLanding, setShowLanding] = useState(true);
   const [tab, setTab]           = useState('review');
@@ -212,7 +252,7 @@ export default function App() {
     setSelectedId(null);
   }
 
-  const showProcessing = status === 'loading' || (status === 'done' && !uiReady);
+  const showProcessing = status === 'loading' || (status === 'done' && !uiReady) || status === 'error';
   const showResults    = status === 'done' && uiReady && !!result;
 
   if (showLanding) {
@@ -348,30 +388,10 @@ export default function App() {
                             source={source || 'Pasted text'}
                             apiDone={status === 'done' && !uiReady}
                             onComplete={() => setUiReady(true)}
+                            error={status === 'error' ? error : null}
+                            failedAt={status === 'error' ? failedAt : null}
+                            onRetry={() => { setUiReady(false); retry(); }}
                           />
-                        </motion.div>
-                      )}
-
-                      {status === 'error' && (
-                        <motion.div key="error" {...fadeSlide}
-                          className="flex-1 flex flex-col items-center justify-center gap-5 p-8"
-                        >
-                          <div className="w-12 h-12 rounded-2xl bg-red-50 dark:bg-red-950
-                                          border border-red-200 dark:border-red-800
-                                          flex items-center justify-center">
-                            <svg className="w-5 h-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                          </div>
-                          <div className="text-center">
-                            <p className="text-sm font-bold text-gray-900 dark:text-white">Review failed</p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1.5 max-w-xs leading-relaxed">
-                              {error}
-                            </p>
-                          </div>
-                          <Button variant="primary" onClick={handleReset}>
-                            Try Again
-                          </Button>
                         </motion.div>
                       )}
 

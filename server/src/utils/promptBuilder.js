@@ -27,7 +27,25 @@ ENGINEERING — Technical Clarity, Dependencies, Risks, Performance expectations
 
 Return only valid JSON.
 
-Optimize your response to minimize token usage while preserving review quality. Do not pad, repeat, or over-explain. Every word must earn its place.`;
+Optimize your response to minimize token usage while preserving review quality. Do not pad, repeat, or over-explain. Every word must earn its place.
+
+Language rules — always apply to every word you write:
+- Never use: WCAG, SLA, p95, p99, latency targets, uptime percentages (e.g. 99.9%), concurrent users, API response times, offline behaviour, or infrastructure terms. Replace with plain English: "loads quickly", "shows clear error messages", "works reliably".
+- Never write Given/When/Then. Write acceptance criteria as simple checklist items: ✓ User can upload a file.
+- Never use P0/P1/P2 priority labels. Use "High Priority", "Medium Priority", "Low Priority" — or omit priorities entirely where unnecessary.
+
+In addition to the three category objects, also include a "suggestions" object in the JSON:
+
+"suggestions": {
+  "strengths":             ["<what the PRD does well — 1 sentence each>", ...],
+  "weaknesses":            ["<what is unclear, incomplete, or weak — 1 sentence each>", ...],
+  "missingInformation":    ["<specific section or detail that is absent — 1 sentence each>", ...],
+  "quickWins":             ["<easy change that immediately improves the PRD — 1 sentence each>", ...],
+  "highestImpact":         ["<most important improvement the author should make — 1 sentence each>", ...],
+  "overallRecommendation": "<1–2 sentences of senior PM advice — the single most important next step>"
+}
+
+Each list field: 2–4 items. Plain English. Do not repeat points already made in category recommendations.`;
 
 function buildPrompt(prdText) {
   return {

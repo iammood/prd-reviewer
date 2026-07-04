@@ -7,33 +7,34 @@ const CategorySchema = z.object({
   recommendations: z.array(z.string()).min(3).max(3),
 });
 
+const SuggestionsSchema = z.object({
+  strengths:             z.array(z.string()).min(1),
+  weaknesses:            z.array(z.string()).min(1),
+  missingInformation:    z.array(z.string()).min(1),
+  quickWins:             z.array(z.string()).min(1),
+  highestImpact:         z.array(z.string()).min(1),
+  overallRecommendation: z.string().min(1),
+});
+
 const ReviewSchema = z.object({
-  product: CategorySchema,
-  design: CategorySchema,
+  product:     CategorySchema,
+  design:      CategorySchema,
   engineering: CategorySchema,
+  suggestions: SuggestionsSchema.optional(),
 });
 
 function extractJson(raw) {
-  // Try direct parse first
-  try {
-    return JSON.parse(raw);
-  } catch (_) {}
+  try { return JSON.parse(raw); } catch (_) {}
 
-  // Strip markdown code fences and retry
   const stripped = raw
     .replace(/^```(?:json)?\s*/i, '')
     .replace(/\s*```\s*$/, '')
     .trim();
-  try {
-    return JSON.parse(stripped);
-  } catch (_) {}
+  try { return JSON.parse(stripped); } catch (_) {}
 
-  // Try to find the first { ... } block
   const match = raw.match(/\{[\s\S]*\}/);
   if (match) {
-    try {
-      return JSON.parse(match[0]);
-    } catch (_) {}
+    try { return JSON.parse(match[0]); } catch (_) {}
   }
 
   return null;
@@ -54,7 +55,11 @@ function validateAndParse(rawResponse) {
     throw err;
   }
 
-  return result.data;
+  const { product, design, engineering, suggestions } = result.data;
+  return {
+    categories:  { product, design, engineering },
+    suggestions: suggestions ?? null,
+  };
 }
 
 module.exports = { validateAndParse };

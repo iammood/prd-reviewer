@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import OverallBanner from './OverallBanner';
 import CategoryCard from './CategoryCard';
 import CategoryModal from './CategoryModal';
+import SuggestionsPanel from './SuggestionsPanel';
 import Button from './Button';
 
 const CATEGORY_ORDER = ['product', 'design', 'engineering'];
@@ -94,6 +95,8 @@ export default function ReviewDashboard({ result, onReset }) {
             />
           ))}
         </div>
+
+        <SuggestionsPanel result={result} />
       </div>
     </>
   );
