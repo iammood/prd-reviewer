@@ -8,7 +8,7 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:10000';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const CATEGORY_ORDER = ['design', 'engineering', 'product', 'security'];
+const CATEGORY_ORDER = ['product', 'design', 'engineering'];
 const STATUS_ORDER   = { blocker: 0, caution: 1 };
 
 const STATUS_BADGE = {
@@ -35,7 +35,7 @@ function buildSteps(result, categoryKey = null) {
   for (const key of relevantKeys) {
     const cat  = result.categories[key];
     const meta = CATEGORY_META[key] || { label: key, icon: '📌' };
-    const issue = firstSentences(cat.verdict, 2);
+    const issue = firstSentences(cat.summary, 2);
     const whyItMatters = parseParagraphs(cat.summary)[0] || '';
     cat.recommendations.forEach((rec, i) => {
       steps.push({
@@ -64,7 +64,7 @@ function buildUpdatedPrd(prdText, steps, inputs) {
 }
 
 function estimateUpdatedScore(result, steps, inputs) {
-  const weights      = { design: 0.25, engineering: 0.30, product: 0.25, security: 0.20 };
+  const weights      = { product: 0.40, design: 0.30, engineering: 0.30 };
   const addressedIds = new Set(steps.filter(s => inputs[s.id]?.trim()).map(s => s.id));
 
   const updatedCategories = {};
