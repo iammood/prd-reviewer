@@ -24,3 +24,6 @@ client/src/.DS_Store
 # Logs
 *.log
 npm-debug.log*
+
+# Local Netlify folder
+.netlify
