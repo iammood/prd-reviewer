@@ -1,0 +1,14 @@
+# Netlify config for the PRD Reviewer client.
+# Assumes the Netlify site's Base Directory is set to "client".
+# Read by both git-based auto-deploys and manual `netlify deploy` CLI runs.
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# SPA fallback. The app has no client-side router today, but this keeps any
+# future deep links from 404-ing.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

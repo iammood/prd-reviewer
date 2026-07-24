@@ -77,7 +77,37 @@ curl https://prd-reviewer.pxxl.run/
 
 ### Client (Netlify)
 
-Netlify deploys automatically on every push to `main`. No manual steps required. If `VITE_API_URL` ever changes (e.g. the Pxxl server URL changes), update it in Netlify's environment settings and trigger a redeploy.
+**For frontend-only changes, deploy directly with the Netlify CLI.** This builds locally and uploads the prebuilt `dist/` folder straight to production — no git push, no waiting on a cloud build.
+
+One-time setup (per machine):
+
+```bash
+cd client
+netlify login          # opens a browser; skip if already logged in
+netlify link           # link this folder to the existing Netlify site
+```
+
+To deploy a frontend change:
+
+```bash
+cd client
+npm run deploy         # vite build → netlify deploy --prod --dir=dist
+```
+
+To preview before going live (uploads to a temporary draft URL, does not touch production):
+
+```bash
+cd client
+npm run deploy:preview
+```
+
+**Why the API URL is safe on a local build:** `client/.env.production` pins `VITE_API_URL=https://prd-reviewer.pxxl.run`. Vite loads it automatically for `vite build`, so a local CLI deploy points at the Pxxl server, not `localhost`. (On Netlify's own cloud builds, the dashboard env var still wins — real shell env vars outrank `.env` files in Vite — so both paths stay correct.)
+
+**Git auto-deploy is disabled.** Continuous deployment has been stopped in the Netlify dashboard, so pushing to `main` no longer builds or deploys the client — the CLI is now the only way frontend changes reach production. (To re-enable cloud builds, Netlify dashboard → **Site configuration → Build & deploy**. The committed `client/netlify.toml` will drive those builds if you do.)
+
+Because git push no longer deploys the client, remember to run `npm run deploy` after merging frontend changes — committing alone ships nothing.
+
+If `VITE_API_URL` ever changes (e.g. the Pxxl server URL changes), update it in **both** `client/.env.production` (for CLI builds) and Netlify's environment settings (for cloud builds).
 
 ---
 
