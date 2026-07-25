@@ -63,7 +63,23 @@ Pxxl dashboard settings that must match:
 
 ### Server (Pxxl)
 
-Pxxl deploys automatically on every push to `main`. To trigger a manual redeploy, use the Pxxl dashboard → your project → **Redeploy**.
+**Pxxl deploys from the dedicated `server-release` branch — not `main`.** This keeps client/docs pushes to `main` from triggering (and paying build minutes for) a server rebuild that ships no server changes. On the Free plan, build minutes (300/month) are a single pool shared across all projects, so wasted server redeploys are worth avoiding.
+
+**One-time Pxxl dashboard setting:** Site → Build & deploy → set the production/deploy branch to **`server-release`** (was `main`).
+
+To deploy server changes:
+
+```bash
+# from an up-to-date main that contains the server changes
+git checkout server-release
+git merge main          # fast-forward; brings the server changes onto the deploy branch
+git push                # → Pxxl auto-deploys
+git checkout main
+```
+
+Only push `server-release` when you actually want a server deploy — that push is the one build-minute spend. `main` no longer deploys the server at all. (Pxxl only builds the `server/` Base Directory, so any client/docs commits that ride along on the merge are ignored by the build.)
+
+To trigger a manual redeploy without new commits, use the Pxxl dashboard → your project → **Redeploy**.
 
 To verify the deployment is live:
 
@@ -153,7 +169,7 @@ PDF and DOCX extraction are the historically fragile paths — always test both.
 
 Pxxl does not have a one-click rollback UI. To roll back:
 
-1. `git revert` the offending commit and push to `main` — Pxxl will auto-deploy the reverted code.
+1. `git revert` the offending commit on `main`, then merge `main` into `server-release` and push it — Pxxl auto-deploys the reverted code (see [Server deploy steps](#server-pxxl)).
 2. Or: in the Pxxl dashboard, find the last successful deployment and click **Redeploy** on that build (if Pxxl retains prior build artifacts).
 
 ### Client

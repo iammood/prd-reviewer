@@ -199,7 +199,7 @@ Uses `claude-haiku-4-5-20251001` for low latency. Returns 2–3 sentences of pol
 
 ## Working rules
 
-- **Deploy only when asked.** Never deploy (client or server) as a side effect of other work — the owner triggers deploys explicitly. Client deploys are draft-first via the Netlify CLI (`npm run deploy:preview`) then published manually in the UI; see `DEPLOYMENT.md`.
+- **Deploy only when asked.** Never deploy (client or server) as a side effect of other work — the owner triggers deploys explicitly. Client deploys are draft-first via the Netlify CLI (`npm run deploy:preview`) then published manually in the UI. **The server deploys only from the `server-release` branch, not `main`** — to ship server changes, merge `main` into `server-release` and push. Pushing `main` never deploys anything. See `DEPLOYMENT.md`.
 - **Never reintroduce the Security review category.** PRDs are scored on Product, Design, and Engineering only. The category was removed on purpose and tends to creep back in via old prompts/schemas/UI. If you find Security remnants anywhere (prompt text, Zod schema, scoring weights, components, template), flag them for removal. (This is about the *review category* — the app's own security posture still matters.)
 - **Backwards compatibility.** This is a demo-stage app under active enhancement — keep changes rollback-safe so anything that breaks can be reverted cleanly.
 
