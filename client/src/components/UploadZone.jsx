@@ -9,7 +9,7 @@ const STEPS = [
   'Sending to AI',
   'Reviewing design',
   'Reviewing engineering',
-  'Reviewing product & security',
+  'Reviewing product',
   'Finalizing your review…',
 ];
 const LAST           = STEPS.length - 1;

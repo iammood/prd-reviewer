@@ -4,6 +4,25 @@ All notable changes to PRD Reviewer are documented here.
 
 ---
 
+## [Unreleased] — 2026-07-25
+
+### Added
+- Product review now conditionally evaluates access, privacy, and compliance — only for PRDs that clearly need it (user accounts, personal/sensitive data, payments, or regulated areas). PRDs that involve none of these are neither flagged nor penalised (`server/src/utils/promptBuilder.js`)
+- New PRD template section "Access, Privacy & Compliance" (Product audience), phrased to be filled in only when applicable (`client/src/data/templateSections.js`)
+
+### Changed
+- Client now deploys via the Netlify CLI (draft upload + manual publish; continuous deployment stopped); server deploys only from the dedicated `server-release` branch so client/doc pushes to `main` no longer spend Pxxl build minutes (`DEPLOYMENT.md`, `CLAUDE.md`)
+- Clarified `server/.env.example` — `PORT=3001` is the local value; Pxxl injects `PORT` in production
+
+### Removed
+- Remaining "Security" review-category references removed from the landing page and from unused components (`LandingPage.jsx`, `LoadingSpinner.jsx`, `UploadZone.jsx`, `MissingEssentials.jsx`) — access/privacy/compliance now lives inside the Product category
+- Deleted stray `prd-reviewer:CLAUDE.md`; salvaged its still-accurate rules into root `CLAUDE.md`
+
+### Fixed
+- `ARCHITECTURE-plain-english.md`: corrected to three categories (was four incl. Security) and accurate scoring weights (Product 40%, Design/Engineering 30% each)
+
+---
+
 ## [Unreleased] — 2026-06-20
 
 ### Changed

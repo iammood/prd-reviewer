@@ -30,15 +30,6 @@ const MOCK_RESULT = [
     feedback: 'Goals are stated but success metrics are vague. Scope boundaries are unclear — feature creep risk is high.',
     fix: 'Define measurable KPIs (e.g. activation rate ≥ 40% in 30 days) and explicitly list what is out of scope.',
   },
-  {
-    key: 'security',
-    label: 'Security',
-    status: 'blocker',
-    statusLabel: 'Missing',
-    score: 28,
-    feedback: 'No mention of authentication, authorization roles, or data privacy considerations. GDPR exposure is unaddressed.',
-    fix: 'Add a security section covering auth model, PII handling, and any applicable compliance requirements.',
-  },
 ];
 
 const STATUS_STYLE = {
@@ -176,15 +167,14 @@ export default function LandingPage({ onEnter }) {
           <div className="flex flex-col gap-3">
             <h2 className="text-3xl font-semibold tracking-tight">A second set of eyes for every PRD.</h2>
             <p className="text-gray-400 max-w-lg mx-auto leading-relaxed">
-              PRD Reviewer analyzes your document across four dimensions — the same ones your team will question you on.
+              PRD Reviewer analyzes your document across three dimensions — the same ones your team will question you on.
             </p>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full">
             {[
+              { label: 'Product',     desc: 'Goals, metrics, scope — plus access & privacy when the feature needs it' },
               { label: 'Design',      desc: 'Flows, edge cases, accessibility' },
               { label: 'Engineering', desc: 'Feasibility, specs, acceptance criteria' },
-              { label: 'Product',     desc: 'Goals, metrics, scope clarity' },
-              { label: 'Security',    desc: 'Auth, privacy, compliance' },
             ].map(({ label, desc }) => (
               <div key={label} className="bg-white/5 border border-white/10 rounded-2xl p-4 text-left flex flex-col gap-1.5">
                 <p className="text-sm font-semibold text-white">{label}</p>
@@ -200,7 +190,7 @@ export default function LandingPage({ onEnter }) {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
             {[
               { n: '1', title: 'Paste or upload your PRD',         desc: 'Drop in a .docx, .pdf, or paste text directly.' },
-              { n: '2', title: 'Get a structured review in seconds', desc: 'AI analyzes across all four dimensions instantly.' },
+              { n: '2', title: 'Get a structured review in seconds', desc: 'AI analyzes across all three dimensions instantly.' },
               { n: '3', title: 'Fix gaps before sharing',           desc: 'Actionable recommendations, not vague feedback.' },
             ].map(({ n, title, desc }) => (
               <div key={n} className="bg-white/5 border border-white/10 rounded-2xl p-5 text-left flex flex-col gap-3">
@@ -240,7 +230,7 @@ export default function LandingPage({ onEnter }) {
                 <p>"Users should be able to log in easily."</p>
                 <p>"The dashboard needs to show relevant info."</p>
                 <p>"We should handle errors somehow."</p>
-                <p>"Security is important and will be addressed."</p>
+                <p>"User data will be kept private, somehow."</p>
               </div>
               <p className="text-xs text-red-400/70 mt-1">Vague. Unactionable. Engineering can't build from this.</p>
             </div>

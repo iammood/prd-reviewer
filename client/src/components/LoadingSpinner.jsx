@@ -6,7 +6,6 @@ const STEPS = [
   'Analyzing design...',
   'Analyzing engineering...',
   'Analyzing product...',
-  'Analyzing security...',
   'Compiling results...',
 ];
 

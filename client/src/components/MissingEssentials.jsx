@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { CATEGORY_META } from '../utils/statusHelpers.jsx';
 import Button from './Button';
 
-const CATEGORY_ORDER = ['design', 'engineering', 'product', 'security'];
+const CATEGORY_ORDER = ['product', 'design', 'engineering'];
 
 const STATUS_ORDER = { blocker: 0, caution: 1 };
 

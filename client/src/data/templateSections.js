@@ -108,6 +108,19 @@ const sections = [
       { text: 'Post-launch monitoring period and owner', example: 'e.g. "PM monitors Mixpanel funnel daily for 2 weeks. Engineering on-call for first 72 hours."' },
     ],
   },
+  {
+    id: 'access-privacy-compliance',
+    title: 'Access, Privacy & Compliance',
+    description: 'Include this ONLY if the feature has user accounts, handles personal or sensitive data, takes payments, or operates in a regulated area (health, finance, minors). Skip it entirely for features that involve none of these.',
+    types: ['new', 'enhancement'],
+    audiences: ['product'],
+    items: [
+      { text: 'Who is allowed to use this, and how they sign in', example: 'e.g. "Only signed-in customers with a completed order can see reorder. Guests are prompted to log in first."' },
+      { text: 'What personal or sensitive data is involved, and how it stays private', example: 'e.g. "Reorder reads existing order history (addresses, past items). No new data is collected; current privacy controls apply unchanged."' },
+      { text: 'Any legal or industry rules that apply, and who signed off', example: 'e.g. "Payment details are handled entirely by our existing payments provider, never stored on our servers. Legal confirmed no new data-retention obligations (sign-off 2024-02-15)."' },
+      { text: 'What must NOT happen — the access or privacy failure cases', example: 'e.g. "A user must never see another account\'s order history, even on a shared device."' },
+    ],
+  },
 
   // ─── New PRD: Design ─────────────────────────────────────────────────────────
   {

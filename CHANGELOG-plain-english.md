@@ -66,3 +66,11 @@ This batch was about making the app feel smoother and more reliable, with no maj
 - Increased the maximum file size you're allowed to upload, from 5MB to 20MB.
 - Removed a small arrow icon from cards that was visually overlapping with other elements.
 - Cleaned up some leftover defensive code that was no longer needed.
+
+## Unreleased (most recent) — Access & privacy folded into Product; Security tidied up
+
+- The review used to have a separate "Security" area. That was retired earlier; this update finishes the job by folding access, privacy, and compliance into the **Product** review — but only when a document actually needs it. If a feature has logins, collects personal data, or takes payments, the Product review now checks those things are covered. If it doesn't touch any of that, nothing is raised and the score isn't affected.
+- Added a matching "Access, Privacy & Compliance" section to the PRD template library (under Product), with a clear note to include it only when the feature calls for it.
+- Removed the last mentions of "Security" from the landing page and a few unused screens.
+- Tidied up the deployment process: the frontend is now published from your computer (build, upload a preview, then click publish), and the backend only redeploys when you push a dedicated release branch — so routine changes stop using up hosting build minutes.
+- Fixed the plain-English architecture note, which still said there were four review areas (it's three).
