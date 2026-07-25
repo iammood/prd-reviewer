@@ -11,6 +11,7 @@ All notable changes to PRD Reviewer are documented here.
 
 ### Added
 - Site metadata + favicon: `client/index.html` now carries a description, canonical URL, `theme-color`, and Open Graph + Twitter Card tags for rich link previews. New `client/public/` assets: `favicon.svg` (document + review-check mark), `og-image.svg` (1200×630 social card), and `site.webmanifest`
+- PNG raster set for full compatibility: `favicon-16/32.png`, `apple-touch-icon.png` (180), `android-chrome-192/512.png`, and `og-image.png` (1200×630); HTML links the PNG fallbacks and switches the social image to PNG; manifest gains PNG icons
 - Product review now conditionally evaluates access, privacy, and compliance — only for PRDs that clearly need it (user accounts, personal/sensitive data, payments, or regulated areas). PRDs that involve none of these are neither flagged nor penalised (`server/src/utils/promptBuilder.js`)
 - New PRD template section "Access, Privacy & Compliance" (Product audience), phrased to be filled in only when applicable (`client/src/data/templateSections.js`)
 
