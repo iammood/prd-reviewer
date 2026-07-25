@@ -77,37 +77,34 @@ curl https://prd-reviewer.pxxl.run/
 
 ### Client (Netlify)
 
-**For frontend-only changes, deploy directly with the Netlify CLI.** This builds locally and uploads the prebuilt `dist/` folder straight to production — no git push, no waiting on a cloud build.
+**For frontend-only changes, deploy with the Netlify CLI.** This builds locally and uploads the prebuilt `dist/` folder as a **draft**, which you then publish manually from the Netlify UI. Continuous deployment is stopped on this site (`stop_builds: true`), so a git push builds nothing — the CLI is the only path.
 
 One-time setup (per machine):
 
 ```bash
 cd client
 netlify login          # opens a browser; skip if already logged in
-netlify link           # link this folder to the existing Netlify site
+netlify link --id 852c5d82-dce4-4b67-9f62-cd952963ed07   # link to the prdreviewer site
 ```
 
-To deploy a frontend change:
+To ship a frontend change:
 
 ```bash
 cd client
-npm run deploy         # vite build → netlify deploy --prod --dir=dist
+npm run deploy:preview   # vite build → uploads a draft, prints a Draft URL
 ```
 
-To preview before going live (uploads to a temporary draft URL, does not touch production):
+Then promote the draft to production in the Netlify UI:
 
-```bash
-cd client
-npm run deploy:preview
-```
+**Deploys** → select the new draft deploy → **Publish deploy**.
+
+> **Why not `--prod` from the CLI?** With `stop_builds: true`, Netlify halts the production deploy pipeline, so `netlify deploy --prod` returns `Forbidden`. Draft deploys are unaffected, so the flow is: draft via CLI → publish via UI. (If you'd rather deploy straight to prod from the CLI, unlink the Git repo in the dashboard and set `stop_builds: false` — then `--prod` works with no git auto-deploys.)
 
 **Why the API URL is safe on a local build:** `client/.env.production` pins `VITE_API_URL=https://prd-reviewer.pxxl.run`. Vite loads it automatically for `vite build`, so a local CLI deploy points at the Pxxl server, not `localhost`. (On Netlify's own cloud builds, the dashboard env var still wins — real shell env vars outrank `.env` files in Vite — so both paths stay correct.)
 
-**Git auto-deploy is disabled.** Continuous deployment has been stopped in the Netlify dashboard, so pushing to `main` no longer builds or deploys the client — the CLI is now the only way frontend changes reach production. (To re-enable cloud builds, Netlify dashboard → **Site configuration → Build & deploy**. The committed `client/netlify.toml` will drive those builds if you do.)
+Remember: committing frontend changes ships nothing on its own — run `npm run deploy:preview` and publish the draft.
 
-Because git push no longer deploys the client, remember to run `npm run deploy` after merging frontend changes — committing alone ships nothing.
-
-If `VITE_API_URL` ever changes (e.g. the Pxxl server URL changes), update it in **both** `client/.env.production` (for CLI builds) and Netlify's environment settings (for cloud builds).
+If `VITE_API_URL` ever changes (e.g. the Pxxl server URL changes), update it in **both** `client/.env.production` (for CLI builds) and Netlify's environment settings (for any future cloud builds).
 
 ---
 
