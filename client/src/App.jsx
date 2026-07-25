@@ -267,11 +267,18 @@ export default function App() {
                          border-b border-gray-200/80 dark:border-gray-800/80 z-10">
         <div className="h-full max-w-[1280px] mx-auto px-6 flex items-center gap-6">
 
-          {/* Logo */}
-          <div className="flex-shrink-0 w-[180px]">
+          {/* Logo — click to return to the landing page */}
+          <button
+            type="button"
+            onClick={() => setShowLanding(true)}
+            aria-label="PRD Reviewer — back to home"
+            className="flex-shrink-0 w-[180px] text-left rounded-lg -mx-1 px-1 cursor-pointer
+                       transition-opacity hover:opacity-70
+                       focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+          >
             <p className="text-sm font-bold text-gray-900 dark:text-white tracking-tight">PRD Reviewer</p>
             <p className="text-[10px] text-gray-400 dark:text-gray-500">AI-powered review</p>
-          </div>
+          </button>
 
           {/* Tab nav */}
           <div className="flex-1 flex justify-center">
