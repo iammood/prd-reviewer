@@ -1,0 +1,12 @@
+{
+  "name": "PRD Reviewer",
+  "short_name": "PRD Reviewer",
+  "description": "AI-powered PRD review across Product, Design, and Engineering — scores, verdicts, and specific fixes.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#030712",
+  "theme_color": "#0B1220",
+  "icons": [
+    { "src": "/favicon.svg", "type": "image/svg+xml", "sizes": "any", "purpose": "any maskable" }
+  ]
+}

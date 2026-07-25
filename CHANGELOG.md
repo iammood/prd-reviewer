@@ -10,6 +10,7 @@ All notable changes to PRD Reviewer are documented here.
 - Upgraded the review model from `claude-opus-4-6` to `claude-opus-4-8` (`server/src/services/anthropicService.js`) — clean model-ID swap, no other request params used
 
 ### Added
+- Site metadata + favicon: `client/index.html` now carries a description, canonical URL, `theme-color`, and Open Graph + Twitter Card tags for rich link previews. New `client/public/` assets: `favicon.svg` (document + review-check mark), `og-image.svg` (1200×630 social card), and `site.webmanifest`
 - Product review now conditionally evaluates access, privacy, and compliance — only for PRDs that clearly need it (user accounts, personal/sensitive data, payments, or regulated areas). PRDs that involve none of these are neither flagged nor penalised (`server/src/utils/promptBuilder.js`)
 - New PRD template section "Access, Privacy & Compliance" (Product audience), phrased to be filled in only when applicable (`client/src/data/templateSections.js`)
 
