@@ -2,7 +2,7 @@
 
 ## What this app does
 
-A web app that lets users upload or paste a PRD (Product Requirements Document) and receive a structured AI-powered review across three dimensions: Product, Design, and Engineering. Results include a score, verdict, analysis, and recommendations per category, plus an overall score and verdict. Users can download the full report as PDF or Word (.docx).
+A web app that lets users upload or paste a PRD (Product Requirements Document) and receive a structured AI-powered review across three dimensions: Product, Design, and Engineering. When a feature calls for it — user accounts, personal or sensitive data, payments, or a regulated area — the Product review also checks access, privacy, and compliance; features that involve none of these are not flagged for it. Results include a score, verdict, analysis, and recommendations per category, plus an overall score and verdict. Users can download the full report as PDF or Word (.docx).
 
 The app also includes a PRD Template reference view with sections filterable by document type (New PRD / Enhancement / Bug) and audience (All / Design / Engineering / Product).
 
@@ -16,7 +16,7 @@ prd-reviewer/
 └── server/          # Node.js + Express (backend API)
 ```
 
-The client proxies `/api/*` requests to the server at `http://localhost:3001` (configured in `vite.config.js`). In production, all fetch calls use `VITE_API_URL` (see Environment variables). The server allows CORS from all origins (`origin: '*'`) to support Netlify → Pxxl App cross-origin requests.
+The client proxies `/api/*` requests to the server at `http://localhost:3001` (configured in `vite.config.js`). In production, all fetch calls use `VITE_API_URL` (see Environment variables). The server intentionally allows CORS from all origins (`origin: '*'`) to support the Netlify → Pxxl App cross-origin setup — the API has no user accounts or session cookies, so there are no per-user credentials to protect. (Because the endpoints are unauthenticated, adding rate limiting or origin restrictions would be a sensible future hardening step if abuse ever becomes a concern.)
 
 The server deploys to **Pxxl App** (migrated from Render). Deployment config lives in `server/pxxl.toml` — sets `startCommand`, a no-op `buildCommand` (the server has no build step), and `port`. The Pxxl project's **Base Directory** setting must be `server` so it finds that file. `ANTHROPIC_API_KEY` is set as a Pxxl dashboard secret, never committed.
 
@@ -105,7 +105,7 @@ All `fetch` calls use a module-level `const API_URL = import.meta.env.VITE_API_U
 | `services/pdfParser.js` | Extracts plain text from `.pdf` using `pdfjs-dist` v3 legacy/CJS build (`pdfjs-dist/legacy/build/pdf.js`). `pdf-parse` was removed — it bundles an ancient pdf.js v1.10.100 that references `PDFJS` as a global and causes uncaught exceptions on Node.js v22+, crashing the process. `GlobalWorkerOptions.workerSrc` is set to `''` to disable browser workers in Node.js. Library is lazy-required inside the function so a broken install never crashes the module at load time. |
 | `services/anthropicService.js` | Calls Claude (`claude-opus-4-6`, 8192 tokens). SDK `maxRetries` set to 0 — retries are managed manually. On 429/502/503 or `ANTHROPIC_TIMEOUT`: waits 2s and retries once. Each attempt has a 60s `Promise.race()` timeout (`ANTHROPIC_TIMEOUT` code). Max wall-clock per review: ~122s. Logs attempt count, duration, estimated input tokens, and actual `message.usage`. |
 | `services/aiRouter.js` | Routes to `anthropicService` or `openaiService` based on `provider` param (always `'anthropic'` in practice). |
-| `utils/promptBuilder.js` | Concise system prompt (~40 lines). Instructs Claude (as a Senior PM) to return `{ product, design, engineering }` — no Security. Each category: score, status, summary (max 2 sentences), exactly 3 recommendations. Plain English only; bans jargon. Special rule: missing Overview forces Product score ≤ 39 (blocker). Optimised for minimal token usage. **Epic 2 additions (appended, never rewritten):** language rules banning WCAG/SLA/p95/uptime%/concurrent-users/Given-When-Then/P0-P1-P2; instructions to also return a `suggestions` object (strengths, weaknesses, missingInformation, quickWins, highestImpact, overallRecommendation — 2–4 items each, 1 sentence, plain English). |
+| `utils/promptBuilder.js` | Concise system prompt. Instructs Claude (as a Senior PM) to return `{ product, design, engineering }` — no Security category. Each category: score, status, summary (max 2 sentences), exactly 3 recommendations. Plain English only; bans jargon and acronyms. Special rules: missing Overview forces Product score ≤ 39 (blocker); the Product review also covers access, privacy & compliance, but **only when the feature needs it** (accounts, personal/sensitive data, payments, regulated areas) — never penalised otherwise. Language rules bar WCAG/SLA/p95/uptime%/concurrent-users/Given-When-Then/P0-P1-P2. Also returns a `suggestions` object (strengths, weaknesses, missingInformation, quickWins, highestImpact, overallRecommendation — 2–4 items each, 1 sentence, plain English). Optimised for minimal token usage. |
 | `utils/validateResponse.js` | Extracts JSON from Claude's response, validates against a Zod schema. `CategorySchema`: score, status, summary, recommendations (exactly 3). `SuggestionsSchema`: strengths, weaknesses, missingInformation, quickWins, highestImpact (all `string[]`), overallRecommendation (`string`). `ReviewSchema` = 3 categories + `suggestions` (optional). `validateAndParse` returns `{ categories, suggestions }` — caller destructures both. |
 
 ---
@@ -201,7 +201,7 @@ Uses `claude-haiku-4-5-20251001` for low latency. Returns 2–3 sentences of pol
 
 - **Deploy only when asked.** Never deploy (client or server) as a side effect of other work — the owner triggers deploys explicitly. Client deploys are draft-first via the Netlify CLI (`npm run deploy:preview`) then published manually in the UI. **The server deploys only from the `server-release` branch, not `main`** — to ship server changes, merge `main` into `server-release` and push. Pushing `main` never deploys anything. See `DEPLOYMENT.md`.
 - **Never reintroduce the Security review category.** PRDs are scored on Product, Design, and Engineering only. The category was removed on purpose and tends to creep back in via old prompts/schemas/UI. If you find Security remnants anywhere (prompt text, Zod schema, scoring weights, components, template), flag them for removal. (This is about the *review category* — the app's own security posture still matters.)
-- **Backwards compatibility.** This is a demo-stage app under active enhancement — keep changes rollback-safe so anything that breaks can be reverted cleanly.
+- **Backwards compatibility.** This is an actively developed app — keep changes rollback-safe so anything that breaks can be reverted cleanly.
 
 ### Definition of done (every change)
 
