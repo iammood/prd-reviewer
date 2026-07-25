@@ -12,3 +12,10 @@
   from = "/*"
   to = "/index.html"
   status = 200
+
+# Serve the web app manifest with the correct MIME type (Netlify defaults
+# .webmanifest to application/octet-stream).
+[[headers]]
+  for = "/site.webmanifest"
+  [headers.values]
+    Content-Type = "application/manifest+json"

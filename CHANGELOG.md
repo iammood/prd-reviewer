@@ -23,6 +23,7 @@ All notable changes to PRD Reviewer are documented here.
 - Deleted stray `prd-reviewer:CLAUDE.md`; salvaged its still-accurate rules into root `CLAUDE.md`
 
 ### Fixed
+- `site.webmanifest` now served as `application/manifest+json` (was `application/octet-stream`) via a `[[headers]]` rule in `client/netlify.toml`
 - `ARCHITECTURE-plain-english.md`: corrected to three categories (was four incl. Security) and accurate scoring weights (Product 40%, Design/Engineering 30% each)
 
 ---
