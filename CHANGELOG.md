@@ -7,6 +7,7 @@ All notable changes to PRD Reviewer are documented here.
 ## [Unreleased] — 2026-07-25
 
 ### Changed
+- Rebranded the logo mark + social image: new favicon set (`favicon.svg`, `favicon.ico`, `favicon-16/32.png`, `apple-touch-icon.png`, `android-chrome-192/512.png`) and new `og-image` (svg source + 80 KB jpg). Added `favicon.ico` for legacy browsers; bumped `og:image`/`twitter:image` to `?v=2` to force fresh social unfurls of the new design
 - Upgraded the review model from `claude-opus-4-6` to `claude-opus-4-8` (`server/src/services/anthropicService.js`) — clean model-ID swap, no other request params used
 
 ### Added
