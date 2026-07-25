@@ -38,7 +38,7 @@ async function callAnthropic({ apiKey, systemPrompt, userMessage }) {
   const client = new Anthropic({ apiKey, maxRetries: 0 });
 
   const params = {
-    model: 'claude-opus-4-6',
+    model: 'claude-opus-4-8',
     max_tokens: 8192,
     system: systemPrompt,
     messages: [{ role: 'user', content: userMessage }],
