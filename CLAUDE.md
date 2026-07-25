@@ -194,3 +194,21 @@ Uses `claude-haiku-4-5-20251001` for low latency. Returns 2–3 sentences of pol
   - `renderText(text)` → returns **JSX** (React element array). Use only inside component render output. Breaks PDF if called there.
   - `parseParagraphs(text)` → splits summary text into clean string lines. Feed into either of the above.
 - **Download separation** — "Review Report" downloads include scores/statuses/analysis; "Updated PRD" downloads are clean production documents using `prdText` + any Fix Mode amendments. Keep these two concerns strictly separate.
+
+---
+
+## Working rules
+
+- **Deploy only when asked.** Never deploy (client or server) as a side effect of other work — the owner triggers deploys explicitly. Client deploys are draft-first via the Netlify CLI (`npm run deploy:preview`) then published manually in the UI; see `DEPLOYMENT.md`.
+- **Never reintroduce the Security review category.** PRDs are scored on Product, Design, and Engineering only. The category was removed on purpose and tends to creep back in via old prompts/schemas/UI. If you find Security remnants anywhere (prompt text, Zod schema, scoring weights, components, template), flag them for removal. (This is about the *review category* — the app's own security posture still matters.)
+- **Backwards compatibility.** This is a demo-stage app under active enhancement — keep changes rollback-safe so anything that breaks can be reverted cleanly.
+
+### Definition of done (every change)
+
+1. UI changes verified in **both light and dark mode** — paired Tailwind classes, no hardcoded colors.
+2. **PDF and DOCX extraction re-tested** after any server change — historically the most fragile path (see `services/pdfParser.js`).
+3. **Mobile responsive** — key views usable at phone width, no horizontal scroll.
+4. **Every error path returns JSON**, never an HTML error page.
+5. **`CHANGELOG.md` updated.**
+6. **No secrets in tracked files.**
+7. **Respect pinned dependency versions** — never bump deps as a side effect of unrelated work.
