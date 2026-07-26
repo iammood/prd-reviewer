@@ -4,7 +4,7 @@ All notable changes to PRD Reviewer are documented here.
 
 ---
 
-## [Unreleased] — 2026-07-25
+## [Unreleased] — 2026-07-26
 
 ### Changed
 - Device back/forward gesture support: the app integrates with the browser History API (no URL routing) so the phone back-swipe and browser Back/Forward navigate between views — Landing ↔ App, and (on mobile) template list ↔ section detail — instead of leaving the site. Forward restores the exact prior view; the logo jumps straight home from any depth. (`client/src/App.jsx`)
@@ -13,20 +13,20 @@ All notable changes to PRD Reviewer are documented here.
 - The header "PRD Reviewer" title is now a clickable button that returns to the landing page (`client/src/App.jsx`)
 - Rebranded the logo mark + social image: new favicon set (`favicon.svg`, `favicon.ico`, `favicon-16/32.png`, `apple-touch-icon.png`, `android-chrome-192/512.png`) and new `og-image` (svg source + 80 KB jpg). Added `favicon.ico` for legacy browsers; bumped `og:image`/`twitter:image` to `?v=2` to force fresh social unfurls of the new design
 - Upgraded the review model from `claude-opus-4-6` to `claude-opus-4-8` (`server/src/services/anthropicService.js`) — clean model-ID swap, no other request params used
+- Deploy workflow: client deploys via the Netlify CLI (draft upload + manual publish; continuous deployment stopped); server deploys only from the dedicated `server-release` branch so `main` pushes no longer spend Pxxl build minutes. Added `client/.env.production`, `client/netlify.toml`, and a `deploy:preview` npm script (`DEPLOYMENT.md`, `CLAUDE.md`)
+- Clarified `server/.env.example` — `PORT=3001` is the local dev value; Pxxl injects `PORT` in production
+- GitHub repo moved to `iammood/prd-reviewer`; gitignored `.claude/settings.local.json` (machine-local)
 
 ### Added
 - Site metadata + favicon: `client/index.html` now carries a description, canonical URL, `theme-color`, and Open Graph + Twitter Card tags for rich link previews. New `client/public/` assets: `favicon.svg` (document + review-check mark), `og-image.svg` (1200×630 social card), and `site.webmanifest`
 - PNG raster set for full compatibility: `favicon-16/32.png`, `apple-touch-icon.png` (180), `android-chrome-192/512.png` for icons, plus `og-image.jpg` (1200×630, ~80 KB JPEG — small enough for social scrapers to fetch within their timeouts, where the 712 KB PNG was at risk of timing out); HTML links the PNG icon fallbacks and points the social image at the JPEG; manifest gains PNG icons
 - Product review now conditionally evaluates access, privacy, and compliance — only for PRDs that clearly need it (user accounts, personal/sensitive data, payments, or regulated areas). PRDs that involve none of these are neither flagged nor penalised (`server/src/utils/promptBuilder.js`)
 - New PRD template section "Access, Privacy & Compliance" (Product audience), phrased to be filled in only when applicable (`client/src/data/templateSections.js`)
-
-### Changed
-- Client now deploys via the Netlify CLI (draft upload + manual publish; continuous deployment stopped); server deploys only from the dedicated `server-release` branch so client/doc pushes to `main` no longer spend Pxxl build minutes (`DEPLOYMENT.md`, `CLAUDE.md`)
-- Clarified `server/.env.example` — `PORT=3001` is the local value; Pxxl injects `PORT` in production
+- Design-interaction skills: installed `ibelick/ui-skills` (`.agents/skills/` + `.claude/skills/`) — `baseline-ui`, `create-design-md`, `fixing-accessibility`, `fixing-metadata`, `fixing-motion-performance`
 
 ### Removed
 - Remaining "Security" review-category references removed from the landing page and from unused components (`LandingPage.jsx`, `LoadingSpinner.jsx`, `UploadZone.jsx`, `MissingEssentials.jsx`) — access/privacy/compliance now lives inside the Product category
-- Deleted stray `prd-reviewer:CLAUDE.md`; salvaged its still-accurate rules into root `CLAUDE.md`
+- Deleted stray `prd-reviewer:CLAUDE.md` (salvaged its still-accurate rules into root `CLAUDE.md`); removed stray root-level `favicons/` + `og-image.png` duplicates
 
 ### Fixed
 - `site.webmanifest` now served as `application/manifest+json` (was `application/octet-stream`) via a `[[headers]]` rule in `client/netlify.toml`
