@@ -77,7 +77,7 @@ export default function ReviewDashboard({ result, onReset }) {
         />
       )}
 
-      <div className="w-full flex flex-col gap-4 px-6 py-6">
+      <div className="w-full flex flex-col gap-4 px-4 md:px-6 py-6">
         <OverallBanner
           overall={result.overall}
           categories={result.categories}

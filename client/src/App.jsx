@@ -202,7 +202,7 @@ function EmptyState() {
       <div>
         <p className="text-sm font-semibold text-gray-400 dark:text-gray-500">No review yet</p>
         <p className="text-xs text-gray-300 dark:text-gray-600 mt-1 leading-relaxed">
-          Upload or paste a PRD on the left to get started
+          Upload or paste a PRD <span className="md:hidden">above</span><span className="hidden md:inline">on the left</span> to get started
         </p>
       </div>
     </div>
@@ -260,19 +260,20 @@ export default function App() {
   }
 
   return (
-    <div className="h-screen bg-gray-50 dark:bg-gray-950 flex flex-col overflow-hidden">
+    <div className="min-h-screen md:h-screen bg-gray-50 dark:bg-gray-950 flex flex-col overflow-x-hidden md:overflow-hidden">
 
       {/* ── Header ── */}
-      <header className="flex-shrink-0 h-14 bg-white/80 dark:bg-gray-950/80 backdrop-blur-md
+      <header className="flex-shrink-0 bg-white/80 dark:bg-gray-950/80 backdrop-blur-md
                          border-b border-gray-200/80 dark:border-gray-800/80 z-10">
-        <div className="h-full max-w-[1280px] mx-auto px-6 flex items-center gap-6">
+        <div className="max-w-[1280px] mx-auto px-4 md:px-6 py-2 md:py-0 md:h-14
+                        flex flex-wrap items-center gap-x-4 md:gap-x-6 gap-y-2">
 
           {/* Logo — click to return to the landing page */}
           <button
             type="button"
             onClick={() => setShowLanding(true)}
             aria-label="PRD Reviewer — back to home"
-            className="flex-shrink-0 w-[180px] text-left rounded-lg -mx-1 px-1 cursor-pointer
+            className="order-1 flex-shrink-0 md:w-[180px] text-left rounded-lg -mx-1 px-1 cursor-pointer
                        transition-opacity hover:opacity-70
                        focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
           >
@@ -281,7 +282,7 @@ export default function App() {
           </button>
 
           {/* Tab nav */}
-          <div className="flex-1 flex justify-center">
+          <div className="order-3 md:order-2 w-full md:w-auto md:flex-1 flex justify-center">
             <div className="flex bg-gray-100 dark:bg-gray-800/70 rounded-full p-1 gap-0.5">
               {[
                 { key: 'review',   label: 'Review PRD'   },
@@ -293,7 +294,7 @@ export default function App() {
                   variant="raw"
                   onClick={() => !showProcessing && setTab(key)}
                   disabled={showProcessing && key !== tab}
-                  className="relative px-5 py-1.5 text-sm font-medium"
+                  className="relative px-5 py-2.5 md:py-1.5 text-sm font-medium min-h-[44px] md:min-h-0"
                 >
                   {tab === key && (
                     <motion.span
@@ -315,13 +316,14 @@ export default function App() {
           </div>
 
           {/* Theme toggle */}
-          <div className="flex-shrink-0 w-[180px] flex justify-end">
+          <div className="order-2 md:order-3 flex-shrink-0 md:w-[180px] flex justify-end ml-auto md:ml-0">
             <Button
               size="raw"
               variant="raw"
               onClick={toggle}
               aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-              className="p-2 text-gray-400 hover:text-gray-600
+              className="p-2 min-h-[44px] min-w-[44px] md:min-h-0 md:min-w-0 flex items-center justify-center
+                         text-gray-400 hover:text-gray-600
                          dark:text-gray-500 dark:hover:text-gray-300
                          hover:bg-gray-100 dark:hover:bg-gray-800"
             >
@@ -333,17 +335,17 @@ export default function App() {
       </header>
 
       {/* ── Workspace ── */}
-      <div className="flex-1 overflow-hidden flex">
-        <div className="flex-1 overflow-hidden flex max-w-[1280px] mx-auto w-full">
+      <div className="flex-1 flex md:overflow-hidden">
+        <div className="flex-1 flex flex-col md:flex-row md:overflow-hidden max-w-[1280px] mx-auto w-full">
 
           {/* ── Left panel ── */}
-          <div className="w-2/5 border-r border-gray-200 dark:border-gray-800 flex flex-col overflow-hidden">
+          <div className="w-full md:w-2/5 md:border-r border-gray-200 dark:border-gray-800 flex flex-col md:overflow-hidden">
             <AnimatePresence mode="wait" initial={false}>
               {tab === 'review' ? (
                 <motion.div
                   key="left-review"
                   {...fade}
-                  className="flex-1 p-6 flex flex-col min-h-0"
+                  className="flex-1 p-4 md:p-6 flex flex-col min-h-0"
                 >
                   <InputPanel
                     onSubmit={submit}
@@ -355,7 +357,7 @@ export default function App() {
                 <motion.div
                   key="left-template"
                   {...fade}
-                  className="flex-1 overflow-y-auto"
+                  className="flex-1 md:overflow-y-auto"
                 >
                   <TemplateSidebar
                     type={tmplType}
@@ -371,8 +373,8 @@ export default function App() {
           </div>
 
           {/* ── Right panel ── */}
-          <div className="flex-1 relative">
-            <div className="absolute inset-0 overflow-y-auto flex flex-col">
+          <div className="w-full md:flex-1 md:relative">
+            <div className="md:absolute md:inset-0 md:overflow-y-auto flex flex-col">
               <AnimatePresence mode="wait" initial={false}>
 
                 {tab === 'review' ? (
@@ -381,7 +383,7 @@ export default function App() {
 
                       {status === 'idle' && (
                         <motion.div key="idle" {...fadeSlide}
-                          className="flex-1 flex items-center justify-center p-8"
+                          className="flex-1 flex items-center justify-center p-8 min-h-[45vh] md:min-h-0"
                         >
                           <EmptyState />
                         </motion.div>
@@ -389,7 +391,7 @@ export default function App() {
 
                       {showProcessing && (
                         <motion.div key="processing" {...fadeSlide}
-                          className="flex-1 flex items-center justify-center p-8"
+                          className="flex-1 flex items-center justify-center p-8 min-h-[45vh] md:min-h-0"
                         >
                           <ProcessingView
                             source={source || 'Pasted text'}

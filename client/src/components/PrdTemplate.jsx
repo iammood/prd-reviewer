@@ -27,10 +27,10 @@ export function TemplateSidebar({ type, audience, selectedId, onTypeChange, onAu
   const visible = filterSections(type, audience);
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col md:h-full">
 
       {/* Filters */}
-      <div className="flex-shrink-0 p-5 border-b border-gray-200 dark:border-gray-800 space-y-4">
+      <div className="flex-shrink-0 p-4 md:p-5 border-b border-gray-200 dark:border-gray-800 space-y-4">
 
         {/* Type segmented control */}
         <div className="flex bg-gray-100 dark:bg-gray-800/70 rounded-full p-1 gap-0.5">
@@ -40,7 +40,7 @@ export function TemplateSidebar({ type, audience, selectedId, onTypeChange, onAu
               size="raw"
               variant="raw"
               onClick={() => onTypeChange(t.id)}
-              className={`relative flex-1 py-1.5 text-xs font-medium transition-colors ${
+              className={`relative flex-1 py-2.5 md:py-1.5 text-xs font-medium transition-colors ${
                 type === t.id
                   ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
                   : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
@@ -59,7 +59,7 @@ export function TemplateSidebar({ type, audience, selectedId, onTypeChange, onAu
               size="raw"
               variant="raw"
               onClick={() => onAudienceChange(a.id)}
-              className={`px-3 py-1 text-xs font-medium transition-colors ${
+              className={`px-3 py-2 md:py-1 text-xs font-medium transition-colors ${
                 audience === a.id
                   ? 'bg-indigo-600 text-white'
                   : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
@@ -73,7 +73,7 @@ export function TemplateSidebar({ type, audience, selectedId, onTypeChange, onAu
       </div>
 
       {/* Section list */}
-      <div className="flex-1 overflow-y-auto py-2">
+      <div className="flex-1 md:overflow-y-auto py-2">
         {visible.length === 0 ? (
           <p className="text-xs text-gray-400 dark:text-gray-500 text-center py-10 px-5">
             No sections match this combination.
@@ -129,7 +129,7 @@ export function TemplateDetail({ id }) {
         <div>
           <p className="text-sm font-semibold text-gray-400 dark:text-gray-500">Select a section</p>
           <p className="text-xs text-gray-300 dark:text-gray-600 mt-1">
-            Choose a template section on the left to see its contents
+            Choose a template section <span className="md:hidden">above</span><span className="hidden md:inline">on the left</span> to see its contents
           </p>
         </div>
       </div>
@@ -137,7 +137,7 @@ export function TemplateDetail({ id }) {
   }
 
   return (
-    <div className="p-8 max-w-2xl">
+    <div className="p-4 md:p-8 max-w-2xl">
       <div className="mb-6">
         <h2 className="text-lg font-bold text-gray-900 dark:text-white leading-tight tracking-tight">{section.title}</h2>
         {section.description && (

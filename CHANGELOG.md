@@ -7,6 +7,7 @@ All notable changes to PRD Reviewer are documented here.
 ## [Unreleased] — 2026-07-25
 
 ### Changed
+- Mobile responsiveness: the two-pane workspace now stacks into a single column below 768px (`md:` breakpoints throughout — no JS viewport checks). Review mode shows the input card then the review/empty state beneath it; Template mode shows filters + section list then the selected section below. Header wraps the mode switcher to its own row on narrow screens; textarea gets a ~340px min-height on phones; touch targets ≥44px; 16px page padding; no horizontal scroll (verified at 375/390/414/768/1280). Desktop layout unchanged. (`App.jsx`, `InputPanel.jsx`, `ReviewDashboard.jsx`, `PrdTemplate.jsx`)
 - The header "PRD Reviewer" title is now a clickable button that returns to the landing page (`client/src/App.jsx`)
 - Rebranded the logo mark + social image: new favicon set (`favicon.svg`, `favicon.ico`, `favicon-16/32.png`, `apple-touch-icon.png`, `android-chrome-192/512.png`) and new `og-image` (svg source + 80 KB jpg). Added `favicon.ico` for legacy browsers; bumped `og:image`/`twitter:image` to `?v=2` to force fresh social unfurls of the new design
 - Upgraded the review model from `claude-opus-4-6` to `claude-opus-4-8` (`server/src/services/anthropicService.js`) — clean model-ID swap, no other request params used

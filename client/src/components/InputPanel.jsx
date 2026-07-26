@@ -99,7 +99,7 @@ export default function InputPanel({ onSubmit, loading, onSourceChange }) {
           variant="raw"
           onClick={() => !extracting && inputRef.current?.click()}
           disabled={extracting}
-          className="flex-shrink-0 flex items-center gap-2.5 px-4 py-2.5
+          className="flex-shrink-0 flex items-center gap-2.5 px-4 py-2.5 min-h-[44px] md:min-h-0
                      border-b border-gray-100 dark:border-gray-800/60
                      hover:bg-gray-50 dark:hover:bg-gray-800/40
                      disabled:cursor-default transition-colors text-left"
@@ -138,7 +138,7 @@ export default function InputPanel({ onSubmit, loading, onSourceChange }) {
         </Button>
 
         {/* Textarea */}
-        <div className="flex-1 relative min-h-0">
+        <div className="flex-1 relative min-h-[340px] md:min-h-0">
           <textarea
             value={pasteText}
             onChange={e => setPasteText(e.target.value)}
