@@ -380,7 +380,7 @@ export default function App() {
               variant="raw"
               onClick={toggle}
               aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-              className="p-2 min-h-[44px] min-w-[44px] md:min-h-0 md:min-w-0 flex items-center justify-center
+              className="p-2 rounded-full min-h-[44px] min-w-[44px] md:min-h-0 md:min-w-0 flex items-center justify-center
                          text-gray-400 hover:text-gray-600
                          dark:text-gray-500 dark:hover:text-gray-300
                          hover:bg-gray-100 dark:hover:bg-gray-800"

@@ -6,7 +6,8 @@
  * Props:     loading, fullWidth, icon (before), iconAfter (after)
  *
  * Use size="raw" variant="raw" for fully-custom buttons (nav items, toggles, accordions)
- * — only rounded-2xl, focus ring, and disabled states are enforced.
+ * — only rounded-2xl (fallback), focus ring, and disabled states are enforced.
+ * Sized CTA buttons are pill-shaped (`rounded-full`, overrides the raw fallback).
  */
 export default function Button({
   variant   = 'primary',
@@ -30,6 +31,7 @@ export default function Button({
 
   // Only applied when size !== 'raw'
   const structural = size !== 'raw' ? [
+    'rounded-full',
     'inline-flex items-center justify-center gap-2',
     'font-semibold whitespace-nowrap select-none shrink-0',
     fullWidth ? 'w-full' : '',

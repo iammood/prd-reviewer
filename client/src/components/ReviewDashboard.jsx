@@ -14,11 +14,11 @@ const CATEGORY_ORDER = ['product', 'design', 'engineering'];
 // prefers-reduced-motion (drops the transform, keeps the fade).
 const revealContainer = {
   hidden: {},
-  show:   { transition: { staggerChildren: 0.06, delayChildren: 0.04 } },
+  show:   { transition: { staggerChildren: 0.13, delayChildren: 0.08 } },
 };
 const revealItem = {
-  hidden: { opacity: 0, y: 10 },
-  show:   { opacity: 1, y: 0, transition: { duration: 0.28, ease: [0.16, 1, 0.3, 1] } },
+  hidden: { opacity: 0, y: 14 },
+  show:   { opacity: 1, y: 0, transition: { duration: 0.45, ease: [0.16, 1, 0.3, 1] } },
 };
 
 // ─── WIP Modal ────────────────────────────────────────────────────────────────

@@ -107,7 +107,7 @@ export default function LandingPage({ onEnter }) {
           <p className="text-sm font-bold tracking-tight">PRD Reviewer</p>
           <button
             onClick={onEnter}
-            className="h-9 px-4 rounded-2xl text-sm font-medium bg-indigo-600 hover:bg-indigo-500 transition-colors"
+            className="h-9 px-4 rounded-full text-sm font-medium bg-indigo-600 hover:bg-indigo-500 transition-colors"
           >
             Open app
           </button>
@@ -130,13 +130,13 @@ export default function LandingPage({ onEnter }) {
           <div className="flex flex-wrap items-center justify-center gap-3">
             <button
               onClick={onEnter}
-              className="h-12 px-6 rounded-2xl text-sm font-semibold bg-indigo-600 hover:bg-indigo-500 transition-colors"
+              className="h-12 px-6 rounded-full text-sm font-semibold bg-indigo-600 hover:bg-indigo-500 transition-colors"
             >
               Review my PRD
             </button>
             <button
               onClick={scrollToDemo}
-              className="h-12 px-6 rounded-2xl text-sm font-semibold bg-white/5 hover:bg-white/10 border border-white/10 transition-colors"
+              className="h-12 px-6 rounded-full text-sm font-semibold bg-white/5 hover:bg-white/10 border border-white/10 transition-colors"
             >
               See how it works
             </button>
@@ -318,7 +318,7 @@ export default function LandingPage({ onEnter }) {
             <button
               onClick={handleDemoReview}
               disabled={!demoText.trim() || demoState === 'loading'}
-              className="self-start h-12 px-6 rounded-2xl text-sm font-semibold
+              className="self-start h-12 px-6 rounded-full text-sm font-semibold
                          bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed
                          transition-colors"
             >
@@ -349,7 +349,7 @@ export default function LandingPage({ onEnter }) {
           </p>
           <button
             onClick={onEnter}
-            className="h-12 px-8 rounded-2xl text-sm font-semibold bg-indigo-600 hover:bg-indigo-500 transition-colors"
+            className="h-12 px-8 rounded-full text-sm font-semibold bg-indigo-600 hover:bg-indigo-500 transition-colors"
           >
             Review my PRD
           </button>
