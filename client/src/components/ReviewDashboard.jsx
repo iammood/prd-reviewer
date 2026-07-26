@@ -8,6 +8,19 @@ import Button from './Button';
 
 const CATEGORY_ORDER = ['product', 'design', 'engineering'];
 
+// Staggered reveal for the results — plays once when a review lands (a rare,
+// rewarding moment, per the animation Gate). Compositor-only (opacity/transform),
+// reusing the app's existing easing curve; MotionConfig makes it respect
+// prefers-reduced-motion (drops the transform, keeps the fade).
+const revealContainer = {
+  hidden: {},
+  show:   { transition: { staggerChildren: 0.06, delayChildren: 0.04 } },
+};
+const revealItem = {
+  hidden: { opacity: 0, y: 10 },
+  show:   { opacity: 1, y: 0, transition: { duration: 0.28, ease: [0.16, 1, 0.3, 1] } },
+};
+
 // ─── WIP Modal ────────────────────────────────────────────────────────────────
 
 function WipModal({ onClose }) {
@@ -77,27 +90,37 @@ export default function ReviewDashboard({ result, onReset }) {
         />
       )}
 
-      <div className="w-full flex flex-col gap-4 px-4 md:px-6 py-6">
-        <OverallBanner
-          overall={result.overall}
-          categories={result.categories}
-          result={result}
-          onFixMode={hasIssues ? () => setShowWip(true) : null}
-        />
+      <motion.div
+        variants={revealContainer}
+        initial="hidden"
+        animate="show"
+        className="w-full flex flex-col gap-4 px-4 md:px-6 py-6"
+      >
+        <motion.div variants={revealItem}>
+          <OverallBanner
+            overall={result.overall}
+            categories={result.categories}
+            result={result}
+            onFixMode={hasIssues ? () => setShowWip(true) : null}
+          />
+        </motion.div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <motion.div variants={revealContainer} className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {CATEGORY_ORDER.map(key => (
-            <CategoryCard
-              key={key}
-              categoryKey={key}
-              data={result.categories[key]}
-              onClick={() => setOpenModal(key)}
-            />
+            <motion.div variants={revealItem} key={key}>
+              <CategoryCard
+                categoryKey={key}
+                data={result.categories[key]}
+                onClick={() => setOpenModal(key)}
+              />
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
-        <SuggestionsPanel result={result} />
-      </div>
+        <motion.div variants={revealItem}>
+          <SuggestionsPanel result={result} />
+        </motion.div>
+      </motion.div>
     </>
   );
 }
