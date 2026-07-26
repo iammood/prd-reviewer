@@ -10,7 +10,8 @@ Upload a PRD, and the app evaluates it across three lenses — **Design**,
 step-by-step **Fix Mode** to close the gaps it finds. Built as a personal project;
 I use it to review my own specs before handoff.
 
-<img width="1382" height="822" alt="Screenshot 2026-07-24 at 23 57 29" src="https://github.com/user-attachments/assets/dd02346a-3181-4cf9-b3f6-9b94d1ebca04" />
+<img width="1262" height="819" alt="Screenshot 2026-07-26 at 17 19 36" src="https://github.com/user-attachments/assets/5be73c63-b7a8-47f0-ac6c-7e85cb1618e7" />
+
 
 
 ## Why I built it
