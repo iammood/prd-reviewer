@@ -1,5 +1,5 @@
 // update
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { AnimatePresence, motion, MotionConfig } from 'framer-motion';
 import InputPanel from './components/InputPanel';
 import ReviewDashboard from './components/ReviewDashboard';
@@ -252,13 +252,66 @@ export default function App() {
     setSelectedId(null);
   }
 
+  // ── Device back/forward navigation via the History API (no URL routing) ──
+  // Each forward step (enter the app; open a section on mobile) pushes a
+  // history entry, so the device back-swipe / browser Back returns to the
+  // previous view instead of leaving the site. `d` tracks depth so the logo
+  // can jump straight home from any level.
+  const depthRef = useRef(0);
+
+  useEffect(() => {
+    window.history.replaceState({ v: 'landing', d: 0 }, '');
+    depthRef.current = 0;
+    function onPop(e) {
+      const st = e.state || { v: 'landing', d: 0 };
+      depthRef.current = st.d || 0;
+      if (st.v === 'app') {
+        setShowLanding(false);
+        setSelectedId(null);
+      } else if (st.v === 'section') {
+        setShowLanding(false);
+        setSelectedId(st.id ?? null);
+      } else {
+        setShowLanding(true);
+        setSelectedId(null);
+      }
+    }
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, []);
+
+  function pushHistory(state) {
+    depthRef.current += 1;
+    window.history.pushState({ ...state, d: depthRef.current }, '');
+  }
+
+  const isMobileWidth = () =>
+    typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches;
+
+  function enterApp() {
+    setShowLanding(false);
+    pushHistory({ v: 'app' });
+  }
+
+  function goHome() {
+    if (depthRef.current > 0) window.history.go(-depthRef.current);
+    else { setShowLanding(true); setSelectedId(null); }
+  }
+
+  // On mobile, opening a section is a navigation (full-screen detail) → push a
+  // history entry so Back returns to the list. On desktop it's just a selection.
+  function handleSelectSection(id) {
+    setSelectedId(id);
+    if (id != null && isMobileWidth()) pushHistory({ v: 'section', id });
+  }
+
   const showProcessing = status === 'loading' || (status === 'done' && !uiReady) || status === 'error';
   const showResults    = status === 'done' && uiReady && !!result;
 
   if (showLanding) {
     return (
       <MotionConfig reducedMotion="user">
-        <LandingPage onEnter={() => setShowLanding(false)} />
+        <LandingPage onEnter={enterApp} />
       </MotionConfig>
     );
   }
@@ -276,7 +329,7 @@ export default function App() {
           {/* Logo — click to return to the landing page */}
           <button
             type="button"
-            onClick={() => setShowLanding(true)}
+            onClick={goHome}
             aria-label="PRD Reviewer — back to home"
             className="order-1 flex-shrink-0 md:w-[180px] text-left rounded-lg -mx-1 px-1 cursor-pointer
                        transition-opacity hover:opacity-70
@@ -370,7 +423,7 @@ export default function App() {
                     selectedId={selectedId}
                     onTypeChange={handleTypeChange}
                     onAudienceChange={setTmplAudience}
-                    onSelect={setSelectedId}
+                    onSelect={handleSelectSection}
                   />
                 </motion.div>
               )}
@@ -423,7 +476,7 @@ export default function App() {
                     {selectedId && (
                       <button
                         type="button"
-                        onClick={() => setSelectedId(null)}
+                        onClick={() => window.history.back()}
                         aria-label="Back to sections"
                         className="md:hidden flex items-center gap-1.5 px-4 pt-4 text-sm font-medium
                                    text-indigo-600 dark:text-indigo-400 active:opacity-60 transition-opacity"
