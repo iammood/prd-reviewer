@@ -85,7 +85,7 @@ export function TemplateSidebar({ type, audience, selectedId, onTypeChange, onAu
               size="raw"
               variant="raw"
               onClick={() => onSelect(s.id)}
-              className={`w-full text-left px-5 py-3 transition-colors ${
+              className={`w-full text-left px-5 py-3 transition-colors active:bg-gray-100 dark:active:bg-gray-800/60 ${
                 selectedId === s.id
                   ? 'bg-indigo-50 dark:bg-indigo-950/40'
                   : 'hover:bg-gray-50 dark:hover:bg-gray-800/40'

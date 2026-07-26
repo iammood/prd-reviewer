@@ -99,7 +99,7 @@ export default function LandingPage({ onEnter }) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white">
+    <div className="min-h-dvh bg-gray-950 text-white">
 
       {/* ── Nav ── */}
       <nav className="sticky top-0 z-20 bg-gray-950/80 backdrop-blur-md border-b border-white/5">

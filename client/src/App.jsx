@@ -1,6 +1,6 @@
 // update
 import { useState, useEffect } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion, MotionConfig } from 'framer-motion';
 import InputPanel from './components/InputPanel';
 import ReviewDashboard from './components/ReviewDashboard';
 import Button from './components/Button';
@@ -256,11 +256,16 @@ export default function App() {
   const showResults    = status === 'done' && uiReady && !!result;
 
   if (showLanding) {
-    return <LandingPage onEnter={() => setShowLanding(false)} />;
+    return (
+      <MotionConfig reducedMotion="user">
+        <LandingPage onEnter={() => setShowLanding(false)} />
+      </MotionConfig>
+    );
   }
 
   return (
-    <div className="min-h-screen md:h-screen bg-gray-50 dark:bg-gray-950 flex flex-col overflow-x-hidden md:overflow-hidden">
+    <MotionConfig reducedMotion="user">
+    <div className="min-h-dvh md:h-dvh bg-gray-50 dark:bg-gray-950 flex flex-col overflow-x-hidden md:overflow-hidden">
 
       {/* ── Header ── */}
       <header className="flex-shrink-0 bg-white/80 dark:bg-gray-950/80 backdrop-blur-md
@@ -338,8 +343,8 @@ export default function App() {
       <div className="flex-1 flex md:overflow-hidden">
         <div className="flex-1 flex flex-col md:flex-row md:overflow-hidden max-w-[1280px] mx-auto w-full">
 
-          {/* ── Left panel ── */}
-          <div className="w-full md:w-2/5 md:border-r border-gray-200 dark:border-gray-800 flex flex-col md:overflow-hidden">
+          {/* ── Left panel (list) — hidden on mobile once a template section is open ── */}
+          <div className={`${tab === 'template' && selectedId ? 'hidden md:flex' : 'flex'} flex-col w-full md:w-2/5 md:border-r border-gray-200 dark:border-gray-800 md:overflow-hidden`}>
             <AnimatePresence mode="wait" initial={false}>
               {tab === 'review' ? (
                 <motion.div
@@ -372,8 +377,8 @@ export default function App() {
             </AnimatePresence>
           </div>
 
-          {/* ── Right panel ── */}
-          <div className="w-full md:flex-1 md:relative">
+          {/* ── Right panel (detail) — hidden on mobile until a template section is open ── */}
+          <div className={`${tab === 'template' && !selectedId ? 'hidden md:block' : 'block'} w-full md:flex-1 md:relative`}>
             <div className="md:absolute md:inset-0 md:overflow-y-auto flex flex-col">
               <AnimatePresence mode="wait" initial={false}>
 
@@ -414,7 +419,33 @@ export default function App() {
                   </motion.div>
                 ) : (
                   <motion.div key="right-template" {...fade} className="flex-1 flex flex-col">
-                    <TemplateDetail id={selectedId} />
+                    {/* Mobile: back to the section list */}
+                    {selectedId && (
+                      <button
+                        type="button"
+                        onClick={() => setSelectedId(null)}
+                        aria-label="Back to sections"
+                        className="md:hidden flex items-center gap-1.5 px-4 pt-4 text-sm font-medium
+                                   text-indigo-600 dark:text-indigo-400 active:opacity-60 transition-opacity"
+                      >
+                        <svg className="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                        </svg>
+                        Back to sections
+                      </button>
+                    )}
+                    <AnimatePresence mode="wait">
+                      <motion.div
+                        key={selectedId || 'tmpl-empty'}
+                        initial={{ opacity: 0, y: 6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -6 }}
+                        transition={{ duration: 0.18, ease: 'easeOut' }}
+                        className="flex-1"
+                      >
+                        <TemplateDetail id={selectedId} />
+                      </motion.div>
+                    </AnimatePresence>
                   </motion.div>
                 )}
 
@@ -426,5 +457,6 @@ export default function App() {
       </div>
 
     </div>
+    </MotionConfig>
   );
 }
