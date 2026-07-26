@@ -32,6 +32,7 @@ All notable changes to PRD Reviewer are documented here.
 - Deleted stray `prd-reviewer:CLAUDE.md` (salvaged its still-accurate rules into root `CLAUDE.md`); removed stray root-level `favicons/` + `og-image.png` duplicates
 
 ### Fixed
+- Intermittent review failures ("couldn't connect to the server", most visible on mobile): Opus 4.8 reviews take ~25–30s — right at the edge of the Pxxl/Cloudflare request timeout, which dropped the connection mid-review. `/api/review` now opens the response immediately and streams a keep-alive space every 10s while the AI works, so the proxy keeps the connection alive (the client reads the full body and `JSON.parse` ignores the leading whitespace). Because headers commit before the outcome is known, post-open errors travel in the body as `{ error, failedAt, errorStatus }` and the client detects them (`server/src/routes/review.js`, `client/src/hooks/useReview.js`)
 - `site.webmanifest` now served as `application/manifest+json` (was `application/octet-stream`) via a `[[headers]]` rule in `client/netlify.toml`
 - `ARCHITECTURE-plain-english.md`: corrected to three categories (was four incl. Security) and accurate scoring weights (Product 40%, Design/Engineering 30% each)
 

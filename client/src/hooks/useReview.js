@@ -49,10 +49,14 @@ export default function useReview() {
       return;
     }
 
-    if (!res.ok) {
-      console.error('[useReview] error response', res.status, '—', data?.error, '— failedAt:', data?.failedAt);
+    // Errors arrive either as a non-2xx status (fast phases) or — once the
+    // keep-alive response has opened (200) — as a body carrying `error` +
+    // `errorStatus` (the status it would have used).
+    if (!res.ok || (data && data.error)) {
+      const st = data?.errorStatus ?? res.status;
+      console.error('[useReview] error response', st, '—', data?.error, '— failedAt:', data?.failedAt);
       setFailedAt(data?.failedAt ?? null);
-      setError(mapError({ status: res.status, serverMessage: data?.error, context: 'review' }));
+      setError(mapError({ status: st, serverMessage: data?.error, context: 'review' }));
       setStatus('error');
       return;
     }

@@ -66,6 +66,34 @@ router.post('/', (req, res, next) => {
     });
   }
 
+  // ── Keep-alive for the long AI phase ──────────────────────────────────────
+  // Opus reviews take ~25-30s — at the edge of the platform's request timeout,
+  // which was dropping the connection (client saw "couldn't connect"). We open
+  // the response now and stream a space every few seconds so the proxy keeps
+  // the connection alive; the client reads the whole body then JSON.parses it,
+  // and JSON.parse ignores the leading whitespace.
+  //
+  // Trade-off: headers (200) are now committed before we know the outcome, so
+  // any error from here on travels in the BODY as { error, failedAt, errorStatus }.
+  // The client treats a body containing `error` as a failure.
+  res.writeHead(200, {
+    'Content-Type': 'application/json; charset=utf-8',
+    'Cache-Control': 'no-cache, no-transform',
+    'X-Accel-Buffering': 'no',
+  });
+  res.write(' '); // flush headers + open the stream immediately
+  let settled = false;
+  const heartbeat = setInterval(() => {
+    if (!settled) { try { res.write(' '); } catch { /* client gone */ } }
+  }, 10000);
+  const finish = (payload) => {
+    if (settled) return;
+    settled = true;
+    clearInterval(heartbeat);
+    res.end(JSON.stringify(payload));
+  };
+  req.on('close', () => { if (!settled) { settled = true; clearInterval(heartbeat); } });
+
   // ── Phase: reviewing (AI call) ────────────────────────────────────────────
   const apiKey = process.env.ANTHROPIC_API_KEY;
   const { systemPrompt, userMessage } = buildPrompt(prdText);
@@ -75,16 +103,10 @@ router.post('/', (req, res, next) => {
     rawResponse = await aiRouter({ provider: 'anthropic', apiKey, systemPrompt, userMessage });
   } catch (err) {
     if (err.code === 'ANTHROPIC_TIMEOUT') {
-      return res.status(504).json({
-        error: 'The AI review took too long. Please try again.',
-        failedAt: 'reviewing',
-      });
+      return finish({ error: 'The AI review took too long. Please try again.', failedAt: 'reviewing', errorStatus: 504 });
     }
     console.error('[review] AI error:', err.message);
-    return res.status(502).json({
-      error: `Review failed: ${err.message || 'Unknown error'}`,
-      failedAt: 'reviewing',
-    });
+    return finish({ error: `Review failed: ${err.message || 'Unknown error'}`, failedAt: 'reviewing', errorStatus: 502 });
   }
 
   // ── Phase: preparing (validate + compute) ─────────────────────────────────
@@ -93,13 +115,10 @@ router.post('/', (req, res, next) => {
     ({ categories, suggestions } = validateAndParse(rawResponse));
   } catch (err) {
     if (err.code === 'AI_SCHEMA_ERROR') {
-      return res.status(422).json({
-        error: `AI response did not match expected schema: ${err.message}`,
-        failedAt: 'preparing',
-      });
+      return finish({ error: `AI response did not match expected schema: ${err.message}`, failedAt: 'preparing', errorStatus: 422 });
     }
     console.error('[review] validation error:', err.message);
-    return res.status(502).json({ error: 'Review failed: unexpected error', failedAt: 'preparing' });
+    return finish({ error: 'Review failed: unexpected error', failedAt: 'preparing', errorStatus: 502 });
   }
 
   const weights = { product: 0.40, design: 0.30, engineering: 0.30 };
@@ -121,7 +140,7 @@ router.post('/', (req, res, next) => {
     })
     .join(' ');
 
-  return res.json({
+  return finish({
     overall: { score: overallScore, verdict, summary: overallSummary },
     categories,
     ...(suggestions && { suggestions }),
