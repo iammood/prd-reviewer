@@ -27,3 +27,6 @@ npm-debug.log*
 
 # Local Netlify folder
 .netlify
+
+# Claude Code local settings (machine-specific — keep out of the repo)
+.claude/settings.local.json
